@@ -50,7 +50,8 @@ export function Tools({ dispatch }) {
       <div>
         {/* <NavLink to="/users"> */}
         <HiMiniBookOpen
-          className="w-6.5 h-6.5 "
+          href="/bible"
+          className="w-6 h-6 "
           onClick={() =>
             dispatch({
               type: "SET_IS_FEED_VISIBLE",
@@ -59,7 +60,7 @@ export function Tools({ dispatch }) {
         />
       </div>
       <div>
-        <Link href="/bible">
+        <Link href="/bookmarks">
           <HiBookmark className="w-6 h-6" />
         </Link>
       </div>

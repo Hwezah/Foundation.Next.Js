@@ -1,6 +1,6 @@
 "use client";
 import UserDashboard from "./UserDashboard";
-import { FaHeart } from "react-icons/fa";
+
 import { useSearch } from "./SearchContext";
 import { useState, useEffect } from "react";
 import Image from "next/image";
@@ -29,9 +29,7 @@ export default function Header() {
         </div>
         <div className="flex items-center justify-between lg:gap-4 gap-1.5 ">
           <SearchBar showSearch={showSearch} setShowSearch={setShowSearch} />
-          <Link href="/donations">
-            <FaHeart className="cursor-pointer" />
-          </Link>
+
           <UserDashboard
             showSearch={showSearch}
             setShowSearch={setShowSearch}

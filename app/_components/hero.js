@@ -1,6 +1,6 @@
 // import { strokeColor } from "./App";
+"use client";
 import { useSearch } from "./SearchContext";
-
 import { VideoEmbed } from "./Sermons";
 import FoundationUtilities from "./FoundationUtilities";
 import React, { memo } from "react";
@@ -28,10 +28,10 @@ function Hero() {
         <div className="relative aspect-square flex-1">
           {" "}
           <Image
-            className="w-full max-h-[60vh] object-cover object-center block"
+            className="w-full max-h-[70vh] object-cover object-center block"
             fill
-            src="/Assets/pexels-jibarofoto-13963623.jpg"
-            alt=""
+            src="/pexels-jibarofoto-13963623.jpg"
+            alt="trending sermons"
           />
         </div>
       ) : (

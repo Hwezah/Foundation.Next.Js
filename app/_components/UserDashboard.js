@@ -1,9 +1,8 @@
-import Notifications from "./Notifications";
 import { HiOutlineUser } from "react-icons/hi";
 import Link from "next/link";
 import { MdOutlineCast } from "react-icons/md";
-import { HiAdjustmentsHorizontal } from "react-icons/hi2";
-
+import { HiAdjustmentsHorizontal, HiOutlineBellAlert } from "react-icons/hi2";
+import { FaHeart } from "react-icons/fa";
 // export default function UserDashboard() {
 //   return (
 //     <div className="flex justify-between gap-4 hidden">
@@ -24,18 +23,25 @@ export default function UserDashboard() {
       className="flex justify-between gap-4"
     >
       <div>
-        <Link href="/user">
+        <Link href="/donations">
+          <FaHeart className="cursor-pointer w-6 h-6" />
+        </Link>
+      </div>
+      <div>
+        <Link href="/cast">
           <MdOutlineCast className="w-6 h-6" />
         </Link>
       </div>
-      <Notifications />
+      <Link href="/notifications">
+        <HiOutlineBellAlert className="w-6 h-6" />
+      </Link>
       <div className="hidden sm:block">
         <Link href="/user">
           <HiOutlineUser className="w-6 h-6" />
         </Link>
       </div>
       <div className="hidden sm:block">
-        <Link href="/user">
+        <Link href="/settings">
           <HiAdjustmentsHorizontal className="w-6 h-6" />
         </Link>
       </div>

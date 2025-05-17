@@ -1,29 +1,33 @@
+
+
 {
-  "name": "foundation",
+  "name": "my-app",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prod": "next build && next start"
+
   },
   "dependencies": {
     "fuse.js": "^7.1.0",
-    "next": "15.3.2",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "@heroicons/react": "^2.2.0",
+    "@supabase/supabase-js": "^2.49.4",
+    "date-fns": "^4.1.0",
+    "next": "14.2.28",
+    "react": "^18",
+    "react-dom": "^18",
     "react-hot-toast": "^2.5.2",
     "react-icons": "^5.5.0",
     "react-player": "^2.16.0"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "autoprefixer": "^10.4.21",
-    "eslint": "^9",
-    "eslint-config-next": "15.3.2",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.7"
+    "eslint": "^8",
+    "eslint-config-next": "14.2.28",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1"
   }
 }

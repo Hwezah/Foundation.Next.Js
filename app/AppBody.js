@@ -20,8 +20,8 @@ export default function AppBody({ children }) {
         className={`${josefin.className} min-h-screen bg-primary-950 text-primary-100 flex flex-col antialiased `}
       >
         <Header />
+        {shouldShowHero && <Hero />}
         <div className="flex-1 px-8 py-12 grid">
-          {shouldShowHero && <Hero />}
           <main className="max-w-7xl mx-auto w-full">{children}</main>
         </div>
         <Footer />

@@ -1,5 +1,4 @@
 import AppBody from "./AppBody";
-
 import "@/app/_styles/globals.css";
 export const metadata = {
   title: {
@@ -12,9 +11,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <div className="flex-1 px-8 py-12 grid">
-        <AppBody>{children}</AppBody>
-      </div>
+      <AppBody>{children}</AppBody>
     </html>
   );
 }
