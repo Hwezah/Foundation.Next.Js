@@ -1,4 +1,4 @@
-import { fetchData } from "./api";
+import fetchData from "@/app/_lib/apis/api";
 const BASE_URL = "https://api.scripture.api.bible/v1/bibles";
 const API_KEY = "2917b29dcc612336646fc8dd29282dbd";
 

@@ -1,7 +1,7 @@
 // import { strokeColor } from "./App";
 "use client";
 import { useSearch } from "./SearchContext";
-import { VideoEmbed } from "./Sermons";
+import { VideoEmbed } from "@/app/_components/SermonsList";
 import FoundationUtilities from "./FoundationUtilities";
 import React, { memo } from "react";
 import Image from "next/image";

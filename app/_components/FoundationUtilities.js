@@ -1,7 +1,7 @@
 import { HiBookmark, HiMiniBookOpen } from "react-icons/hi2";
 import Link from "next/link";
 import { useSearch } from "./SearchContext";
-import Bible from "./Bible";
+// import Bible from "./Bible";
 // import FileInput from "./FileInput";
 // import User from "./user";
 export default function FoundationUtilities() {
@@ -37,7 +37,7 @@ export default function FoundationUtilities() {
           </div>
         </div>
         <div className={isFeedVisible ? "block" : "hidden"}>
-          <Bible />
+          {/* <Bible /> */}
         </div>
       </div>
     </div>

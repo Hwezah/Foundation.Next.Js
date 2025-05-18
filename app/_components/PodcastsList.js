@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
-import { useLocalStorage } from "./Services/useLocalStorage";
-import { fetchData } from "./Services/api";
-import { Loader } from "./loader";
+"use client";
+import { useState, useRef } from "react";
+import Image from "next/image";
+// import { useLocalStorage } from "@/app/_components/UseLocalStorage";
+import Spinner from "@/app/_components/Spinner";
 import { useSearch } from "./SearchContext";
 import {
   HiOutlinePlay,
@@ -9,96 +10,14 @@ import {
   HiMiniArrowDownTray,
 } from "react-icons/hi2";
 import { AiOutlineReload } from "react-icons/ai";
-export async function PodcastsApi(query, offset = 0) {
-  if (!query) return []; // Return an empty array if no query is provided
-  // const API_KEY = "5499e7a41f314beaab46610580e99eaf";
-  // const API_KEY = "8bdff6c6a5a94d2d9f43c1ad32b5d19e";
-  // const API_KEY = "f6402a826907452d912101ce2e4addf0";
 
-  const API_KEY = "f6402a826907452d912101ce2e4addf0";
-  const URL = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
-    query
-  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&&safe_mode=0&offset=${offset}&page_size=2`;
-
-  try {
-    const endpoint = {
-      headers: {
-        "X-ListenAPI-Key": API_KEY,
-      },
-    };
-
-    const data = await fetchData(URL, endpoint);
-
-    return data.results || [];
-  } catch (error) {
-    console.error("not fetching Podcasts", error);
-    throw new Error(error.message);
-  }
-}
-
-export default function Podcasts({ query }) {
+export default function PodcastsList({ podcasts }) {
   const { dispatch, isloading } = useSearch();
-  const [podcasts, setPodcasts] = useLocalStorage([], "podcasts");
   const [playingPodcastId, setPlayingPodcastId] = useState(null);
   const [progress, setProgress] = useState({});
   const [isSeeking, setIsSeeking] = useState(false);
   const [selectedPodcastId, setSelectedPodcastId] = useState(null);
   const audioRefs = useRef({}); // Store references to audio elements
-
-  // Fetch and set podcasts
-  async function fetchAndSetPodcasts(query, offset = 0, append = false) {
-    try {
-      dispatch({ type: "LOADING" });
-      dispatch({ type: "REJECTED", payload: "" });
-
-      const results = await PodcastsApi(query, offset);
-      const nextOffset = offset + 2; // 4 = page_size
-      localStorage.setItem("nextPage", nextOffset); // Update next page offset in localStorage
-
-      setPodcasts((prev) => {
-        if (append) {
-          const existingIds = new Set(prev.map((p) => p.id));
-          const newUnique = results.filter((p) => !existingIds.has(p.id));
-          return [...prev, ...newUnique];
-        } else {
-          return results;
-        }
-      });
-    } catch (error) {
-      dispatch({ type: "REJECTED", payload: error.message });
-    } finally {
-      dispatch({ type: "LOADED" });
-    }
-  }
-
-  // Initial fetch when query changes
-  useEffect(() => {
-    if (!query || typeof query !== "string" || query.trim() === "") {
-      return;
-    }
-
-    localStorage.setItem("nextPage", 4); // Set initial next page offset
-    fetchAndSetPodcasts(query, 0, false); // Fetch and set the first set of podcasts
-  }, [query, dispatch]);
-
-  // Load more podcasts
-  async function handleLoadMorePodcasts() {
-    const nextPage = parseInt(localStorage.getItem("nextPage"), 10); // Parse offset from localStorage
-
-    if (!query || query.trim() === "") {
-      dispatch({
-        type: "REJECTED",
-        payload: "Please enter a valid search term.",
-      });
-      return;
-    }
-
-    if (!isNaN(nextPage)) {
-      await fetchAndSetPodcasts(query, nextPage, true); // true = append results
-    } else {
-      dispatch({ type: "REJECTED", payload: "No more results" });
-    }
-  }
 
   const handlePlayPause = (podcastId) => {
     const currentAudio = audioRefs.current[podcastId];
@@ -160,7 +79,7 @@ export default function Podcasts({ query }) {
 
   return (
     <div className=" xl:pb-1 xl:px-10 md:px-4 sm:px-2 lg:px-6 ">
-      {isloading && <Loader />}
+      {isloading && <Spinner />}
       {/* {error && <p className="text-red-500">{error}</p>} */}
       <div className=" grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))]  gap-4 gap-y-2 md:gap-y-4 ">
         {podcasts.map((podcast) => (
@@ -171,8 +90,9 @@ export default function Podcasts({ query }) {
             } p-3 lg:rounded shadow-md text-white relative max-h-[8.5rem]`}
           >
             <div className="flex gap-4 items-center ">
-              <div className="w-16 h-16 flex-shrink-0">
-                <img
+              <div className="w-16 h-16 flex-shrink-0 aspect-square relative">
+                <Image
+                  fill
                   src={podcast.image}
                   alt={podcast.title_original}
                   className=" rounded  object-cover"
@@ -273,7 +193,7 @@ export default function Podcasts({ query }) {
         ))}
       </div>
       <button
-        onClick={handleLoadMorePodcasts}
+        // onClick={handleLoadMorePodcasts}
         className="flex items-center gap-2 mx-auto text-white px-4 py-2 rounded-lg cursor-pointer"
       >
         <AiOutlineReload className="w-6 h-6 mt-8" />

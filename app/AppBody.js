@@ -5,6 +5,7 @@ import Footer from "@/app/_components/Footer";
 import Header from "@/app/_components/header";
 import { Josefin_Sans } from "next/font/google";
 import { SearchProvider } from "@/app/_components/SearchContext";
+import Trending from "@/app/_components/TrendingClient";
 import "@/app/_styles/globals.css";
 const josefin = Josefin_Sans({
   subsets: ["latin"],
@@ -21,6 +22,7 @@ export default function AppBody({ children }) {
       >
         <Header />
         {shouldShowHero && <Hero />}
+        {shouldShowHero && <Trending />}
         <div className="flex-1 px-8 py-12 grid">
           <main className="max-w-7xl mx-auto w-full">{children}</main>
         </div>

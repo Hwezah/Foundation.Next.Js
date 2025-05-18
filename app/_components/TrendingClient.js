@@ -1,9 +1,8 @@
+"use client";
 import { useState } from "react";
 import { useSearch } from "./SearchContext";
-
 import React, { memo } from "react";
-import Podcasts from "./Podcasts";
-import Sermons from "./Sermons";
+import TrendingServer from "./TrendingServer";
 
 function Trending() {
   const { query } = useSearch(); // Use context for shared state
@@ -20,8 +19,7 @@ function Trending() {
         selectedsearchQuery={selectedsearchQuery}
         setSelectedsearchQuery={setSelectedsearchQuery}
       />
-      {selectedsearchQuery === "Podcasts" && <Podcasts query={query} />}
-      {selectedsearchQuery === "Sermons" && <Sermons query={query} />}
+      <TrendingServer selected={selectedsearchQuery} query={query} />
       <div className="flex justify-center mt-4"></div>
     </div>
   );
