@@ -1,60 +1,68 @@
 "use client";
-import { createContext, useContext, useMemo, useReducer } from "react";
+import { createContext, useContext, useMemo, useState } from "react";
 import { strokeColor } from "./Constants";
 
 const SearchContext = createContext();
 
-const initialState = {
-  query: "",
-  selectedVideo: null,
-  isFeedVisible: false,
-  error: "",
-  isLoading: false, // Added this line
-};
-
-function reducer(state, action) {
-  switch (action.type) {
-    case "LOADING":
-      return { ...state, isLoading: true }; // Added this line
-    case "LOADED":
-      return { ...state, isLoading: false }; // Added this line
-    case "SET_QUERY":
-      return { ...state, query: action.payload };
-    case "SET_SELECTED_VIDEO":
-      return { ...state, selectedVideo: action.payload };
-    case "SET_IS_FEED_VISIBLE":
-      return { ...state, isFeedVisible: !state.isFeedVisible };
-    case "REJECTED":
-      return { ...state, isLoading: false, error: action.payload };
-
-    default:
-      throw new Error(`Unhandled action type: ${action.type}`);
-  }
-}
-
 export function useSearch() {
   const context = useContext(SearchContext);
-  if (context === undefined) {
-    throw new Error("useSearch must be used within a SearchProvider");
+  if (!context) {
+    throw new Error("useSearchContext must be used within a SearchProvider");
   }
   return context;
 }
 
 export function SearchProvider({ children }) {
-  const [{ query, selectedVideo, isFeedVisible, error, isLoading }, dispatch] =
-    useReducer(reducer, initialState);
+  const [query, setQuery] = useState("");
+  const [selectedVideoObject, setSelectedVideoObject] = useState(null); // Stores the full video object for the Hero
+  const [currentPlayingId, setCurrentPlayingId] = useState(null); // Stores only the ID of the playing video
+  const [isFeedVisible, setIsFeedVisible] = useState(true);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Optional: strokeColor and dispatch placeholders (since they're in the value)
+  const [strokeColor, setStrokeColor] = useState("#000"); // default color
+  // const dispatch = () => {}; // replace with actual logic if needed
+
+  // Function to set the currently playing video
+  // This will update both the ID for list highlighting and the object for the Hero
+  const setCurrentlyPlayingVideo = (video) => {
+    if (video && video.id && video.id.videoId) {
+      setCurrentPlayingId(video.id.videoId);
+      setSelectedVideoObject(video);
+    } else {
+      // If null or invalid video is passed, clear both
+      setCurrentPlayingId(null);
+      setSelectedVideoObject(null);
+    }
+  };
 
   const value = useMemo(
     () => ({
-      isFeedVisible,
-      selectedVideo,
       query,
+      setQuery,
+      playingVideoId: currentPlayingId, // Expose the ID
+      setCurrentlyPlayingVideo, // Expose the new setter
+      isFeedVisible,
+      setIsFeedVisible,
+      error,
+      setError,
+      isLoading,
+      setIsLoading,
+      strokeColor,
+      setStrokeColor,
+      selectedVideo: selectedVideoObject, // Keep selectedVideo for Hero
+      // setSelectedVideo: setSelectedVideoObject, // Keep if direct setting is needed elsewhere
+    }),
+    [
+      query,
+      selectedVideoObject,
+      currentPlayingId,
+      isFeedVisible,
+      error,
       isLoading,
       strokeColor,
-      error,
-      dispatch,
-    }),
-    [isFeedVisible, selectedVideo, query, isLoading, error]
+    ]
   );
 
   return (

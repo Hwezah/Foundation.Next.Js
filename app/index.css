@@ -1,11 +1,18 @@
 /* Import Tailwind CSS and Google Fonts */
 
-@tailwind utilities;
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
-@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Base Styles (Global Styles) */
 @layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
   :root {
     font-family: "Montserrat", Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -54,59 +61,4 @@
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer */
   }
-}
-
-/* Style the track */
-input[type="range"] {
-  -webkit-appearance: none;
-  background: transparent;
-  width: 100%;
-  height: 2px;
-  background-color: white;
-  cursor: pointer;
-}
-
-/* WebKit Track */
-input[type="range"]::-webkit-slider-runnable-track {
-  height: 2px;
-  background: white;
-}
-
-/* WebKit Thumb (custom vertical bar knob) */
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  height: 15px;
-  width: 2px;
-  background: white;
-  cursor: pointer;
-  margin-top: -6.5px; /* Align with the track */
-  border-radius: 1px;
-}
-
-/* Firefox Thumb */
-input[type="range"]::-moz-range-thumb {
-  height: 15px;
-  width: 2px;
-  background: white;
-  border: none;
-  border-radius: 1px;
-  cursor: pointer;
-}
-
-/* Firefox Track */
-input[type="range"]::-moz-range-track {
-  height: 2px;
-  background: white;
-}
-
-/* Hide arrows in Chrome, Safari, Edge */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-/* Hide arrows in Firefox */
-input[type="number"] {
-  -moz-appearance: textfield;
 }

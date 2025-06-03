@@ -13,22 +13,15 @@ function Hero() {
   return (
     <div
       // ${ isSticky ? "" : "sticky top-0 z-10"}
-      className={`bg-[#01212c] w-full sticky top-0 z-1 
-      xl:flex xl:justify-between items-start scrollbar-hidden overflow-hidden`}
+      className={`bg-[#01212c] w-full max-h-[75vh] sticky top-0 z-40 
+      xl:flex xl:justify-between items-start scrollbar-hidden overflow-hidden `}
     >
       {/* If still loading, show the Loader */}
       {!selectedVideo ? (
-        // Show fallback video while waiting for the selected video
-        // <video autoPlay muted loop className="w-full h-[70vh] object-cover">
-        //   <source
-        //     src="public\Assets\5875774-uhd_3840_2160_24fps.mp4" // Ensure the path is correct
-        //     type="video/mp4"
-        //   />
-        // </video>
         <div className="relative aspect-square flex-1">
           {" "}
           <Image
-            className="w-full max-h-[70vh] object-cover object-center block"
+            className=" max-h-full object-cover object-top block"
             fill
             src="/pexels-jibarofoto-13963623.jpg"
             alt="trending sermons"
@@ -40,9 +33,9 @@ function Hero() {
           <div className="hidden xl:block h-full">
             {/* <Tools setIsFeedVisible={setIsFeedVisible} /> */}
           </div>
-          <div className="w-full aspect-video ">
+          <div className="w-full  aspect-video ">
             <VideoEmbed
-              className=" shadow-none rounded-none w-full h-full object-cover "
+              className=" shadow-none rounded-none w-full max-h-full object-cover "
               videoId={selectedVideo.id.videoId}
               title={selectedVideo.snippet.title}
             />

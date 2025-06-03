@@ -12,7 +12,7 @@ import {
 import { AiOutlineReload } from "react-icons/ai";
 
 export default function PodcastsList({ podcasts }) {
-  const { dispatch, isloading } = useSearch();
+  const { isloading } = useSearch();
   const [playingPodcastId, setPlayingPodcastId] = useState(null);
   const [progress, setProgress] = useState({});
   const [isSeeking, setIsSeeking] = useState(false);
@@ -34,28 +34,70 @@ export default function PodcastsList({ podcasts }) {
 
       // Play the selected podcast
       if (currentAudio) {
-        currentAudio.play();
+        // Attempt to set initial progress state, especially if reusing a paused audio
+        // This ensures the UI has some values before onloadedmetadata if audio was already loaded
+        setProgress((prev) => {
+          const existingProgress = prev[podcastId] || {};
+          return {
+            ...prev,
+            [podcastId]: {
+              currentTime:
+                currentAudio.currentTime || existingProgress.currentTime || 0,
+              duration:
+                currentAudio.duration && isFinite(currentAudio.duration)
+                  ? currentAudio.duration
+                  : existingProgress.duration || 0,
+            },
+          };
+        });
+
+        currentAudio.play().catch((error) => {
+          console.error(`Error playing podcast ${podcastId}:`, error);
+          if (playingPodcastId === podcastId) {
+            setPlayingPodcastId(null); // Reset playing state if play fails
+          }
+        });
         setPlayingPodcastId(podcastId);
 
         currentAudio.onloadedmetadata = () => {
-          setProgress((prev) => ({
-            ...prev,
-            [podcastId]: {
-              ...(prev[podcastId] || {}),
-              duration: currentAudio.duration,
-            },
-          }));
+          const duration = currentAudio.duration;
+          const currentTime = currentAudio.currentTime;
+          if (duration && isFinite(duration)) {
+            setProgress((prev) => ({
+              ...prev,
+              [podcastId]: {
+                currentTime: isFinite(currentTime)
+                  ? currentTime
+                  : prev[podcastId]?.currentTime || 0,
+                duration: duration,
+              },
+            }));
+          }
         };
 
         currentAudio.ontimeupdate = () => {
           if (isSeeking) return;
-          setProgress((prev) => ({
-            ...prev,
-            [podcastId]: {
-              ...(prev[podcastId] || {}),
-              currentTime: currentAudio.currentTime,
-            },
-          }));
+          const currentTime = currentAudio.currentTime;
+          const duration = currentAudio.duration;
+
+          if (isFinite(currentTime) && duration && isFinite(duration)) {
+            setProgress((prev) => ({
+              ...prev,
+              [podcastId]: {
+                currentTime: currentTime,
+                duration: duration,
+              },
+            }));
+          } else if (isFinite(currentTime)) {
+            // If only currentTime is valid, update it but try to keep old duration
+            setProgress((prev) => ({
+              ...prev,
+              [podcastId]: {
+                currentTime: currentTime,
+                duration: prev[podcastId]?.duration || 0,
+              },
+            }));
+          }
         };
       }
     }
@@ -87,9 +129,9 @@ export default function PodcastsList({ podcasts }) {
             key={podcast.id}
             className={`${
               selectedPodcastId === podcast.id ? "bg-[#3f4c4e]" : "bg-[#01222e]"
-            } p-3 lg:rounded shadow-md text-white relative max-h-[8.5rem]`}
+            } p-3 lg:rounded shadow-md text-white relative max-h-[8.5rem] flex items-center`}
           >
-            <div className="flex gap-4 items-center ">
+            <div className="flex items-center gap-4 ">
               <div className="w-16 h-16 flex-shrink-0 aspect-square relative">
                 <Image
                   fill
@@ -102,7 +144,7 @@ export default function PodcastsList({ podcasts }) {
                 {" "}
                 <div className="flex">
                   <div className="w-[200px] overflow-hidden whitespace-nowrap">
-                    <h4 className="text-md font-semibold mr-auto animate-marquee inline-block w-fit hover:[animation-play-state:paused]">
+                    <h4 className="text-md font-semibold mr-auto animate-marquee inline-block w-fit hover:[animation-play-state:paused] ">
                       {podcast.title_original}
                     </h4>
                   </div>
@@ -121,7 +163,7 @@ export default function PodcastsList({ podcasts }) {
                 </div>
                 <div className="flex items-baseline">
                   <div className="flex-1">
-                    <p className="text-sm text-gray-400 font-medium  line-clamp-2 relative">
+                    <p className="text-sm text-gray-400 font-medium  line-clamp-2 relative mb-2 leading-tight">
                       {podcast.description_original
                         ? podcast.description_original
                             .replace(/<[^>]*>/g, "")
@@ -147,7 +189,9 @@ export default function PodcastsList({ podcasts }) {
                 </div>
                 {playingPodcastId === podcast.id && (
                   <div className="">
-                    <div className="flex items-center gap-2 mt--1rem]">
+                    <div className="flex items-center gap-2 mt-[-4px]">
+                      {" "}
+                      {/* Corrected typo and used a small negative margin */}
                       {/* <span className="text-sm text-gray-400 ">
                         {formatTime(progress[podcast.id]?.currentTime || 0)}
                       </span> */}
@@ -159,31 +203,73 @@ export default function PodcastsList({ podcasts }) {
                         value={progress[podcast.id]?.currentTime || 0}
                         onMouseDown={() => setIsSeeking(true)}
                         onMouseUp={(e) => {
-                          const newTime = parseFloat(e.target.value);
-                          audioRefs.current[podcast.id].currentTime = newTime;
-                          setProgress((prev) => ({
-                            ...prev,
-                            [podcast.id]: {
-                              ...(prev[podcast.id] || {}),
-                              currentTime: newTime,
-                            },
-                          }));
+                          const finalTime = parseFloat(e.target.value);
+                          if (
+                            audioRefs.current[podcast.id] &&
+                            isFinite(finalTime) &&
+                            finalTime >= 0
+                          ) {
+                            const audio = audioRefs.current[podcast.id];
+                            let seekTime = finalTime;
+                            if (audio.duration && finalTime > audio.duration) {
+                              seekTime = audio.duration; // Cap at duration
+                            }
+                            audio.currentTime = seekTime;
+                            setProgress((prev) => ({
+                              // Ensure progress state matches final audio time
+                              ...prev,
+                              [podcast.id]: {
+                                ...(prev[podcast.id] || {}),
+                                currentTime: seekTime,
+                                duration:
+                                  audio.duration ||
+                                  prev[podcast.id]?.duration ||
+                                  0,
+                              },
+                            }));
+                          }
                           setIsSeeking(false);
                         }}
                         onChange={(e) => {
                           const newTime = parseFloat(e.target.value);
+                          // Update the visual progress immediately
                           setProgress((prev) => ({
                             ...prev,
                             [podcast.id]: {
                               ...(prev[podcast.id] || {}),
                               currentTime: newTime,
+                              // Keep duration if already set
+                              duration:
+                                prev[podcast.id]?.duration ||
+                                audioRefs.current[podcast.id]?.duration ||
+                                0,
                             },
                           }));
+                          // Update the audio element's current time for live seeking
+                          if (
+                            audioRefs.current[podcast.id] &&
+                            isFinite(newTime) &&
+                            newTime >= 0
+                          ) {
+                            const audio = audioRefs.current[podcast.id];
+                            let seekTime = newTime;
+                            // Prevent seeking beyond duration during live drag if duration is known
+                            if (audio.duration && newTime > audio.duration) {
+                              seekTime = audio.duration;
+                            }
+                            audio.currentTime = seekTime;
+                          }
                         }}
                       />
-                      <span className="text-sm text-gray-400">
-                        {formatTime(progress[podcast.id]?.currentTime || 0)}
-                      </span>
+                      <div className="text-sm text-amber-500 flex">
+                        <span className="mr-1">
+                          {formatTime(progress[podcast.id]?.currentTime || 0)}
+                        </span>
+                        /{" "}
+                        <span className="ml-1">
+                          {formatTime(progress[podcast.id]?.duration || 0)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 )}

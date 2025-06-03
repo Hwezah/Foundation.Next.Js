@@ -1,3 +1,4 @@
+"use client";
 import { HiBookmark, HiMiniBookOpen } from "react-icons/hi2";
 import Link from "next/link";
 import { useSearch } from "./SearchContext";
@@ -49,15 +50,16 @@ export function Tools({ dispatch }) {
     <nav className="flex justify-between gap-2">
       <div>
         {/* <NavLink to="/users"> */}
-        <HiMiniBookOpen
-          href="/bible"
-          className="w-6 h-6 "
+        <Link
+          href={"/bible"}
           onClick={() =>
             dispatch({
               type: "SET_IS_FEED_VISIBLE",
             })
           }
-        />
+        >
+          <HiMiniBookOpen className="w-6 h-6 " />
+        </Link>
       </div>
       <div>
         <Link href="/bookmarks">

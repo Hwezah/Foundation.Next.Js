@@ -1,4 +1,3 @@
-import AppBody from "./AppBody";
 import "@/app/_styles/globals.css";
 export const metadata = {
   title: {
@@ -11,7 +10,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <AppBody>{children}</AppBody>
+      <body>
+        <div className="w-full max-w-9xl mx-auto px-4">{children}</div>
+      </body>
     </html>
   );
 }

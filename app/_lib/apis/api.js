@@ -12,19 +12,7 @@ export default async function fetchData(URL, endpoint) {
   const data = await response.json();
   console.log(data);
 
-  // Handle YouTube's pagination
-  if (data.nextPageToken) {
-    localStorage.setItem("nextPageToken", data.nextPageToken);
-  } else {
-    localStorage.removeItem("nextPageToken");
-  }
-
-  // Handle ListenNotes pagination
-  if (data.next_offset !== undefined) {
-    localStorage.setItem("nextOffset", data.next_offset);
-  } else {
-    localStorage.removeItem("nextOffset");
-  }
+  // Removed localStorage handling for pagination tokens
 
   return data;
 }

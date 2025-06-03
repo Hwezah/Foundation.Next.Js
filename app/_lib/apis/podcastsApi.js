@@ -1,30 +1,29 @@
 import PodcastsList from "@/app/_components/PodcastsList";
 import fetchData from "@/app/_lib/apis/api";
+
+// const API_KEY = "5499e7a41f314beaab46610580e99eaf";
+// const API_KEY = "8bdff6c6a5a94d2d9f43c1ad32b5d19e";
+// const API_KEY = "f6402a826907452d912101ce2e4addf0";
+
 export default async function Podcasts({ query }) {
-  if (!query) return []; // Return an empty array if no query is provided
-  // const API_KEY = "5499e7a41f314beaab46610580e99eaf";
-  // const API_KEY = "8bdff6c6a5a94d2d9f43c1ad32b5d19e";
-  // const API_KEY = "f6402a826907452d912101ce2e4addf0";
+  if (!query) return <div>No query provided</div>;
 
   const API_KEY = "f6402a826907452d912101ce2e4addf0";
   const URL = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
     query
-  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&&safe_mode=0&offset=${offset}&page_size=2`;
+  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&&safe_mode=0&offset=0&page_size=2`;
 
   try {
     const endpoint = {
-      headers: {
-        "X-ListenAPI-Key": API_KEY,
-      },
+      headers: { "X-ListenAPI-Key": API_KEY },
     };
-
     const data = await fetchData(URL, endpoint);
-    podcasts = data.results || [];
+    const podcasts = data.results || [];
+    return <PodcastsList podcasts={podcasts} />;
   } catch (error) {
-    console.error("not fetching Podcasts", error);
-    throw new Error(error.message);
+    console.error("Error fetching podcasts", error);
+    return <div>Failed to load podcasts.</div>;
   }
-  return <PodcastsList podcasts={podcasts} />;
 }
 
 // Fetch and set podcasts

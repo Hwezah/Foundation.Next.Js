@@ -7,6 +7,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        "8xl": "900rem", // 1440px
+        "9xl": "120rem", // 1600px
+      },
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",

@@ -2,9 +2,9 @@
 import UserDashboard from "./UserDashboard";
 
 import { useSearch } from "./SearchContext";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import Link from "next/link";
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 
 export default function Header() {
@@ -13,12 +13,12 @@ export default function Header() {
     <>
       <div className="flex items-center justify-between lg:p-4 p-2.5  w-full xl:px-10 md:px-4 sm:px-2 lg:px-6">
         <div className="flex items-center">
-          <Image
-            src="public\Assets\FoundationLogoWhite.svg"
+          {/* <Image
+            src="Assets\FoundationLogoWhite.svg"
             alt="Foundation Logo"
             fill
             className="w-[74px] hidden lg:block  object-cover"
-          />
+          /> */}
           <h1
             className={`xl:text-4xl md:text-3xl text-2xl font-black ${
               showSearch ? "hidden sm:block" : "block"
@@ -29,7 +29,6 @@ export default function Header() {
         </div>
         <div className="flex items-center justify-between lg:gap-4 gap-1.5 ">
           <SearchBar showSearch={showSearch} setShowSearch={setShowSearch} />
-
           <UserDashboard
             showSearch={showSearch}
             setShowSearch={setShowSearch}
@@ -40,22 +39,27 @@ export default function Header() {
   );
 }
 function SearchBar({ showSearch, setShowSearch }) {
-  const { query, dispatch } = useSearch();
+  const { query, setQuery } = useSearch(); // Use query and setQuery from context
+  const router = useRouter();
+  const currentSearchParams = useSearchParams();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
-  const [searchQuery, setsearchQuery] = useState(query);
 
-  function handleSearch() {
-    if (!searchQuery || searchQuery.trim() === "") {
-      dispatch({
-        type: "REJECTED",
-        payload: "Please enter a valid search term.",
-      });
-      return;
+  const handleSearchSubmit = useCallback(() => {
+    const selectedCategory = currentSearchParams.get("selected") || "Sermons"; // Default to Sermons or get current
+    const trimmedQuery = query ? query.trim() : "";
+
+    const params = new URLSearchParams();
+    params.set("selected", selectedCategory);
+
+    if (trimmedQuery) {
+      params.set("query", trimmedQuery);
     }
+    // If query is empty, it will navigate with only 'selected' param, effectively clearing the search for 'query'
 
-    dispatch({ type: "SET_QUERY", payload: searchQuery });
+    router.push(`/?${params.toString()}`);
+
     setShowSearch(false);
-  }
+  }, [query, router, currentSearchParams, setShowSearch]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -68,13 +72,13 @@ function SearchBar({ showSearch, setShowSearch }) {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [showSearch]);
 
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault(); // Prevent page reload
-        handleSearch(); // Perform search
+        handleSearchSubmit(); // Perform search
       }}
       className="relative flex items-center md:block rounded-lg"
     >
@@ -87,25 +91,21 @@ function SearchBar({ showSearch, setShowSearch }) {
             if (!showSearch) {
               setShowSearch(true); // Open search bar
             } else {
-              handleSearch(); // Already open, perform search
+              handleSearchSubmit(); // Already open, perform search
             }
-          } else {
-            handleSearch(); // Already open, perform search
           }
         }}
         className={`absolute top-1/2 -translate-y-1/2 rounded-full text-white transition ${
           showSearch ? "right-2" : "right-1"
         } md:right-6`}
       >
-        <Link href="#">
-          <HiMiniMagnifyingGlass className="w-6 h-6" />
-        </Link>
+        <HiMiniMagnifyingGlass className="w-6 h-6" />
       </button>
 
       {/* Full search bar */}
       <input
-        value={searchQuery}
-        onChange={(e) => setsearchQuery(e.target.value)}
+        value={query || ""}
+        onChange={(e) => setQuery(e.target.value)}
         className={`flex xl:w-[350px] rounded-full bg-[#01222e] px-6 py-1.5 sm:py-2.5 xl:py-3 transition-all duration-300 md:focus:w-[400px] font-bold text-gray-500 focus:outline-none ${
           showSearch ? "block" : "hidden"
         } md:block`}
