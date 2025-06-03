@@ -2,11 +2,13 @@
 import { HiBookmark, HiMiniBookOpen } from "react-icons/hi2";
 import Link from "next/link";
 import { useSearch } from "./SearchContext";
-// import Bible from "./Bible";
+import { useSearchParams } from "next/navigation"; // Added import
+import Bible from "./Bible";
+
 // import FileInput from "./FileInput";
 // import User from "./user";
 export default function FoundationUtilities() {
-  const { selectedVideo, isFeedVisible, dispatch } = useSearch();
+  const { selectedVideo, isFeedVisible, setIsFeedVisible } = useSearch();
 
   return (
     <div
@@ -33,32 +35,41 @@ export default function FoundationUtilities() {
               </span>
             </h3>
             <div className="">
-              <Tools isFeedVisible={isFeedVisible} dispatch={dispatch} />
+              <Tools
+                setIsFeedVisible={setIsFeedVisible}
+                isFeedVisible={isFeedVisible}
+              />
             </div>
           </div>
         </div>
-        <div className={isFeedVisible ? "block" : "hidden"}>
-          {/* <Bible /> */}
-        </div>
+        {isFeedVisible && (
+          <div className={isFeedVisible ? "block" : "hidden"}>
+            <Bible />
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-export function Tools({ dispatch }) {
+export function Tools({ setIsFeedVisible}) {
+  const searchParams = useSearchParams();
+const handleBibleLinkClick = () => {
+  if (typeof setIsFeedVisible === "function") {
+    setIsFeedVisible(prev => !prev);
+  }
+};
+
+
+  const currentParrams = new URLSearchParams(searchParams);
+  currentParrams.set("selected", "Bible");
+  const biblelinkHref = `?${currentParrams.toString()}`;
   return (
-    <nav className="flex justify-between gap-2">
+    <nav className="flex justify-between gap-2 items-center">
       <div>
         {/* <NavLink to="/users"> */}
-        <Link
-          href={"/bible"}
-          onClick={() =>
-            dispatch({
-              type: "SET_IS_FEED_VISIBLE",
-            })
-          }
-        >
-          <HiMiniBookOpen className="w-6 h-6 " />
+        <Link href={biblelinkHref} onClick={handleBibleLinkClick}>
+          <HiMiniBookOpen className="w-6 h-6" />
         </Link>
       </div>
       <div>

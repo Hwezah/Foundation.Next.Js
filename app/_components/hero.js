@@ -21,7 +21,7 @@ function Hero() {
         <div className="relative aspect-square flex-1">
           {" "}
           <Image
-            className=" max-h-full object-cover object-top block"
+            className=" max-h-[75vh] object-cover object-top block"
             fill
             src="/pexels-jibarofoto-13963623.jpg"
             alt="trending sermons"
