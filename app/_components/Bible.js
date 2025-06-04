@@ -6,50 +6,13 @@ import Fuse from "fuse.js";
 import { useSearch } from "./SearchContext";
 import { useMemo } from "react";
 import SpinnerMini from "./SpinnerMini";
+import Spinner from "./Spinner";
 import {
   HiMiniMagnifyingGlass,
   HiMiniBars3BottomLeft,
   HiMiniBars3,
   HiMiniPencilSquare,
 } from "react-icons/hi2";
-
-function BibleDisplay({ result, isVerseByVerse, bibleVersion }) {
-  return (
-    <div className="bible-display">
-      <div className="mt-1 px-2">
-        <h3 className="text-lg font-bold text-blue-400">
-          {result.reference}
-          <span className="text-xs text-white font-semibold px-2">
-            {bibleVersion}
-          </span>
-        </h3>
-        <p className="text-gray-200">
-          {result.content
-            .split(/(?=\b\d{1,3}[^a-zA-Z0-9]*[A-Z])/)
-            .map((part, index) => {
-              const match = part.match(/^(\d{1,3})([^a-zA-Z0-9]*)([A-Z].*)/);
-              if (!match) return <span key={index}>{part}</span>;
-
-              const [, verseNum, symbol, verseText] = match;
-
-              return (
-                <span
-                  key={index}
-                  className={isVerseByVerse ? "block mb-1" : "inline"}
-                >
-                  <span className="text-xs text-blue-400 mr-1 font-semibold">
-                    {verseNum}.
-                  </span>
-                  <span className="text-gray-400">{symbol}</span>
-                  {verseText + " "}
-                </span>
-              );
-            })}
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export default function Bible() {
   return (
@@ -265,7 +228,9 @@ export const BibleSearch = ({ fetchBibleData }) => {
   // Effect to clear error when inputs change
   useEffect(() => {
     setError(null);
-  }, [book, chapter, verse, bibleVersion, setError]);
+    if (!book || !chapter) return;
+    handleBibleSearch();
+  }, [chapter, verse, bibleVersion, setError]);
 
   const handleBibleSearch = async () => {
     setResult(null);
@@ -291,8 +256,8 @@ export const BibleSearch = ({ fetchBibleData }) => {
       : `${abbr}.${chapter}`;
 
     const endpoint = verse
-      ? `${URL}/${bibleId}/verses/${verseId}`
-      : `/${bibleId}/chapters/${verseId}`; // Corrected endpoint path construction
+      ? `/${bibleId}/verses/${verseId}`
+      : `/${bibleId}/chapters/${verseId}`;
 
     try {
       const data = await fetchBibleData(endpoint); // Pass only the endpoint path
@@ -381,9 +346,57 @@ export const BibleSearch = ({ fetchBibleData }) => {
       </form>
 
       {error && <p className="text-amber-500">{error}</p>}
-      {result && (
-        <BibleDisplay result={result} isVerseByVerse={isVerseByVerse} />
-      )}
+      <div className="bible-display flex items-center justify-center min-h-[200px]">
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          result && (
+            <BibleDisplay
+              result={result}
+              isVerseByVerse={isVerseByVerse}
+              bibleVersion={bibleVersion}
+            />
+          )
+        )}
+      </div>
     </div>
   );
 };
+
+function BibleDisplay({ result, isVerseByVerse, bibleVersion }) {
+  return (
+    <div className="bible-display flex items-center">
+      <div className="mt-1 px-2">
+        <h3 className="text-lg font-bold text-blue-400">
+          {result.reference}
+          <span className="text-xs text-amber-500 font-semibold px-2">
+            {bibleVersion === "KJV" ? "GANDA" : "KJV"}
+          </span>
+        </h3>
+        <p className="text-gray-200">
+          {result.content
+            .split(/(?=\b\d{1,3}[^a-zA-Z0-9]*[A-Z])/)
+            .map((part, index) => {
+              const match = part.match(/^(\d{1,3})([^a-zA-Z0-9]*)([A-Z].*)/);
+              if (!match) return <span key={index}>{part}</span>;
+
+              const [, verseNum, symbol, verseText] = match;
+
+              return (
+                <span
+                  key={index}
+                  className={isVerseByVerse ? "block mb-1" : "inline"}
+                >
+                  <span className="text-xs text-blue-400 mr-1 font-semibold">
+                    {verseNum}.
+                  </span>
+                  <span className="text-gray-400">{symbol}</span>
+                  {verseText + " "}
+                </span>
+              );
+            })}
+        </p>
+      </div>
+    </div>
+  );
+}
