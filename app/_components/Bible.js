@@ -11,7 +11,7 @@ import {
   HiMiniMagnifyingGlass,
   HiMiniBars3BottomLeft,
   HiMiniBars3,
-  HiMiniPencilSquare,
+  HiMiniArrowsRightLeft,
 } from "react-icons/hi2";
 
 export default function Bible() {
@@ -301,11 +301,11 @@ export const BibleSearch = ({ fetchBibleData }) => {
           className=" px-1 sm:inline-block bg-[#4a5759] text-white  lg:py-1 rounded hover:bg-[#3b4647]"
           type="button"
         >
-          <HiMiniPencilSquare className="w-5 h-5" />
+          <HiMiniArrowsRightLeft className="w-5 h-5" />
         </button>
 
         <input
-          className="bg-[#022b3a] border-none focus:outline-none min-w-[100px] border rounded px-2"
+          className="bg-[#022b3a] border-none focus:outline-none min-w-[100px] border rounded px-2 "
           type="text"
           placeholder="Book"
           value={book}
@@ -346,9 +346,11 @@ export const BibleSearch = ({ fetchBibleData }) => {
       </form>
 
       {error && <p className="text-amber-500">{error}</p>}
-      <div className="bible-display flex items-center justify-center min-h-[200px]">
+      <div className="bible-display flex items-end justify-center min-h-[200px]">
         {isLoading ? (
-          <Spinner />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <Spinner />
+          </div>
         ) : (
           result && (
             <BibleDisplay
@@ -365,15 +367,15 @@ export const BibleSearch = ({ fetchBibleData }) => {
 
 function BibleDisplay({ result, isVerseByVerse, bibleVersion }) {
   return (
-    <div className="bible-display flex items-center">
+    <div className="bible-display flex items-center relative">
       <div className="mt-1 px-2">
         <h3 className="text-lg font-bold text-blue-400">
           {result.reference}
           <span className="text-xs text-amber-500 font-semibold px-2">
-            {bibleVersion === "KJV" ? "GANDA" : "KJV"}
+            {bibleVersion === "KJV" ? "(GANDA)" : "(KJV)"}
           </span>
         </h3>
-        <p className="text-gray-200">
+        <p className="">
           {result.content
             .split(/(?=\b\d{1,3}[^a-zA-Z0-9]*[A-Z])/)
             .map((part, index) => {

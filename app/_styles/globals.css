@@ -115,3 +115,5 @@
   --rdp-background-color: theme("colors.accent.600") !important;
   margin: 0 !important;
 }
+
+/* Add this in your global CSS or Tailwind's `@layer` if using JIT mode */
