@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"; // Import useEffect
 import { fetchBibleData } from "../_lib/apis/bibleApi";
 import Fuse from "fuse.js";
 import { useSearch } from "./SearchContext";
-import Link from "next/link";
+import { useMemo } from "react";
+import SpinnerMini from "./SpinnerMini";
 import {
   HiMiniMagnifyingGlass,
   HiMiniBars3BottomLeft,
@@ -69,7 +70,7 @@ export const BibleSearch = ({ fetchBibleData }) => {
     GANDA: "de4e12af7f28f599-01",
   };
   const [bibleVersion, setBibleVersion] = useState("KJV");
-  const bibleId = BIBLE_IDS[bibleVersion];
+  const bibleId = useMemo(() => BIBLE_IDS[bibleVersion], [bibleVersion]);
 
   const [isVerseByVerse, setIsVerseByVerse] = useState(false);
   const toggleDisplayStyle = () => setIsVerseByVerse((prev) => !prev);
@@ -308,7 +309,7 @@ export const BibleSearch = ({ fetchBibleData }) => {
   };
 
   return (
-    <div className="p-2 w-full mx-auto">
+    <div className="p-4 w-full mx-auto">
       <form
         className="flex gap-1 justify-end mb-3"
         onSubmit={(e) => {
@@ -332,10 +333,10 @@ export const BibleSearch = ({ fetchBibleData }) => {
           onClick={() =>
             setBibleVersion((prev) => (prev === "KJV" ? "GANDA" : "KJV"))
           }
-          className="py-0.5 sm:inline-block bg-[#4a5759] text-white p-0.5 lg:py-1 rounded hover:bg-[#3b4647]"
+          className=" px-1 sm:inline-block bg-[#4a5759] text-white  lg:py-1 rounded hover:bg-[#3b4647]"
           type="button"
         >
-          <HiMiniPencilSquare className="w-6.5 h-6.5" />
+          <HiMiniPencilSquare className="w-5 h-5" />
         </button>
 
         <input
@@ -364,8 +365,7 @@ export const BibleSearch = ({ fetchBibleData }) => {
           type="submit"
           className="hidden sm:inline-block bg-[#4a5759] text-white px-2 py-0.5 lg:py-1 rounded hover:bg-[#3b4647]"
         >
-          Search
-          {isLoading && <span className="spinner-mini ml-2"></span>}
+          {isLoading ? <SpinnerMini /> : "Search"}
         </button>
 
         <button

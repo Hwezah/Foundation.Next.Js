@@ -13,9 +13,12 @@ export default function FoundationUtilities() {
   return (
     <div
       className={`xl:max-w-[40%] 
-         max-h-[28rem] 
-       overflow-y-auto  bg-[#01212c] gap-6 xl:pt-0 ${
-         isFeedVisible ? "scrollbar-hidden " : ""
+         h-full  /* Allow parent panel to control height */
+       overflow-y-auto gap-6 xl:pt-0 ${
+         /* Removed bg-[#01212c] to inherit from parent panel */
+         isFeedVisible
+           ? "scrollbar-hidden"
+           : "" /* Ensure no extra space if scrollbar-hidden is conditional */
        }`}
     >
       {" "}
@@ -52,14 +55,13 @@ export default function FoundationUtilities() {
   );
 }
 
-export function Tools({ setIsFeedVisible}) {
+export function Tools({ setIsFeedVisible }) {
   const searchParams = useSearchParams();
-const handleBibleLinkClick = () => {
-  if (typeof setIsFeedVisible === "function") {
-    setIsFeedVisible(prev => !prev);
-  }
-};
-
+  const handleBibleLinkClick = () => {
+    if (typeof setIsFeedVisible === "function") {
+      setIsFeedVisible((prev) => !prev);
+    }
+  };
 
   const currentParrams = new URLSearchParams(searchParams);
   currentParrams.set("selected", "Bible");

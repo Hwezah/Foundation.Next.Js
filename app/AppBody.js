@@ -29,7 +29,7 @@ export default function AppBody({ children, trendingSlot }) {
         {shouldShowHero && <Hero />}
         {shouldShowHero && trendingSlot}{" "}
         <div className="flex-1 px-8 py-12 grid">
-          <main className="max-w-7xl mx-auto w-full">{children}</main>
+          <main className="mx-auto w-full">{children}</main>
         </div>
         <Footer />
       </div>

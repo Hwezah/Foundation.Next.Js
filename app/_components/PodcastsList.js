@@ -129,7 +129,7 @@ export default function PodcastsList({ podcasts }) {
             key={podcast.id}
             className={`${
               selectedPodcastId === podcast.id ? "bg-[#3f4c4e]" : "bg-[#01222e]"
-            } p-3 lg:rounded shadow-md text-white relative max-h-[8.5rem] flex items-center`}
+            } p-3 lg:rounded  text-white relative h-[6rem] flex items-center`}
           >
             <div className="flex items-center gap-4 ">
               <div className="w-16 h-16 flex-shrink-0 aspect-square relative">
@@ -142,7 +142,7 @@ export default function PodcastsList({ podcasts }) {
               </div>
               <div className="">
                 {" "}
-                <div className="flex">
+                <div className="flex items-start">
                   <div className="w-[200px] overflow-hidden whitespace-nowrap">
                     <h4 className="text-md font-semibold mr-auto animate-marquee inline-block w-fit hover:[animation-play-state:paused] ">
                       {podcast.title_original}
