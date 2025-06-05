@@ -4,7 +4,7 @@ import { useSearch } from "./SearchContext";
 import { VideoEmbed } from "@/app/_components/SermonsList";
 // import FoundationUtilities from "./FoundationUtilities";
 import Bible from "./Bible";
-import React, { memo, useState, useEffect } from "react";
+import React, { memo, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation"; // Import useRouter
 import Image from "next/image";
 import { BsArrowLeftCircleFill, BsArrowRightCircleFill } from "react-icons/bs";
@@ -17,8 +17,8 @@ function Hero() {
   const [currentRecentQueryIndex, setCurrentRecentQueryIndex] = useState(0);
   const [heroSuggestion, setHeroSuggestion] = useState(null); // Renamed for clarity, stores suggestion data
   const [isLoadingHeroBg, setIsLoadingHeroBg] = useState(false);
+  const autoSlideIntervalRef = useRef(null);
   const router = useRouter();
-  console.log(recentQueries);
 
   useEffect(() => {
     // This effect will fetch suggestions based on the current recent query index
@@ -28,38 +28,67 @@ function Hero() {
         setIsLoadingHeroBg(true);
         setHeroSuggestion(null); // Clear previous suggestion
 
-        fetchHeroSuggestions(currentQuery)
-          .then((data) => {
-            console.log("Hero suggestion data:", data);
-            setHeroSuggestion(data);
-          })
-          .catch((err) => {
-            console.error("Error fetching hero suggestion:", err);
-            setHeroSuggestion(null); // Clear on error
-          })
-          .finally(() => setIsLoadingHeroBg(false));
+        // fetchHeroSuggestions(currentQuery)
+        //   .then((data) => {
+        //     console.log("Hero suggestion data:", data);
+        //     setHeroSuggestion(data);
+        //   })
+        //   .catch((err) => {
+        //     console.error("Error fetching hero suggestion:", err);
+        //     setHeroSuggestion(null); // Clear on error
+        //   })
+        //   .finally(() => setIsLoadingHeroBg(false));
       }
     } else {
       setHeroSuggestion(null); // No recent queries
     }
   }, [recentQueries, currentRecentQueryIndex]); // Re-fetch when recent queries or index changes
 
+  const advanceToNextQuery = () => {
+    setCurrentRecentQueryIndex((prevIndex) =>
+      prevIndex === recentQueries.length - 1 ? 0 : prevIndex + 1
+    );
+  };
+
+  useEffect(() => {
+    // Auto-slide functionality
+    if (recentQueries && recentQueries.length > 1 && !selectedVideo) {
+      autoSlideIntervalRef.current = setInterval(() => {
+        advanceToNextQuery();
+      }, 5000); // Change image every 5 seconds
+    }
+
+    return () => {
+      if (autoSlideIntervalRef.current) {
+        clearInterval(autoSlideIntervalRef.current);
+      }
+    };
+  }, [recentQueries, selectedVideo]); // Re-initialize interval if recentQueries change or video is selected/deselected
+
+  const resetAutoSlideTimer = () => {
+    if (autoSlideIntervalRef.current) {
+      clearInterval(autoSlideIntervalRef.current);
+    }
+    if (recentQueries && recentQueries.length > 1 && !selectedVideo) {
+      autoSlideIntervalRef.current = setInterval(advanceToNextQuery, 5000);
+    }
+  };
+
   const handleRecentSearchClick = (clickedQuery) => {
     setQuery(clickedQuery); // Update the context query
-    // Navigate to trigger the search. Adjust the 'selected' param if needed.
     router.push(`/?query=${encodeURIComponent(clickedQuery)}&selected=Sermons`);
   };
 
   const handleNextRecentQuery = () => {
-    setCurrentRecentQueryIndex((prevIndex) =>
-      prevIndex === recentQueries.length - 1 ? 0 : prevIndex + 1
-    );
+    advanceToNextQuery();
+    resetAutoSlideTimer();
   };
 
   const handlePrevRecentQuery = () => {
     setCurrentRecentQueryIndex((prevIndex) =>
       prevIndex === 0 ? recentQueries.length - 1 : prevIndex - 1
     );
+    resetAutoSlideTimer();
   };
 
   const thumbnails = heroSuggestion?.items?.[0]?.snippet?.thumbnails;

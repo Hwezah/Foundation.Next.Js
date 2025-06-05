@@ -45,21 +45,35 @@ function SearchBar({ showSearch, setShowSearch }) {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
 
   const handleSearchSubmit = useCallback(() => {
-    const selectedCategory = currentSearchParams.get("selected") || "Sermons"; // Default to Sermons or get current
+    const selectedCategory = currentSearchParams.get("selected") || "Sermons";
     const trimmedQuery = query ? query.trim() : "";
 
-    const params = new URLSearchParams();
+    // Preserve existing search params and update query and selected
+    const params = new URLSearchParams(currentSearchParams.toString());
     params.set("selected", selectedCategory);
 
     if (trimmedQuery) {
       params.set("query", trimmedQuery);
+    } else {
+      params.delete("query"); // Remove query param if it's empty
     }
-    // If query is empty, it will navigate with only 'selected' param, effectively clearing the search for 'query'
+
     addRecentQuery(trimmedQuery);
     router.push(`/?${params.toString()}`);
+    router.refresh(); // Add this line to refresh server components
 
-    setShowSearch(false);
-  }, [query, router, currentSearchParams, setShowSearch]);
+    // Only hide search bar if it was specifically shown for small screens
+    if (isSmallScreen) {
+      setShowSearch(false);
+    }
+  }, [
+    query,
+    router,
+    currentSearchParams,
+    setShowSearch,
+    addRecentQuery,
+    isSmallScreen,
+  ]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -72,7 +86,7 @@ function SearchBar({ showSearch, setShowSearch }) {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, [showSearch]);
+  }, []); // Run once on mount
 
   return (
     <form
@@ -85,14 +99,13 @@ function SearchBar({ showSearch, setShowSearch }) {
       {/* Button for small screens */}
 
       <button
-        type="button"
-        onClick={() => {
-          if (isSmallScreen) {
-            if (!showSearch) {
-              setShowSearch(true); // Open search bar
-            } else {
-              handleSearchSubmit(); // Already open, perform search
-            }
+        type="submit" // Changed to submit
+        onClick={(e) => {
+          if (isSmallScreen && !showSearch) {
+            e.preventDefault(); // Prevent submission
+            setShowSearch(true); // Just show the input
+            // On next click, or if !isSmallScreen, or if showSearch is true,
+            // the default submit action will trigger the form's onSubmit
           }
         }}
         className={`absolute top-1/2 -translate-y-1/2 rounded-full text-white transition ${
