@@ -39,7 +39,7 @@ export default function Header() {
   );
 }
 function SearchBar({ showSearch, setShowSearch }) {
-  const { query, setQuery } = useSearch(); // Use query and setQuery from context
+  const { query, setQuery, addRecentQuery } = useSearch(); // Use query and setQuery from context
   const router = useRouter();
   const currentSearchParams = useSearchParams();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -55,7 +55,7 @@ function SearchBar({ showSearch, setShowSearch }) {
       params.set("query", trimmedQuery);
     }
     // If query is empty, it will navigate with only 'selected' param, effectively clearing the search for 'query'
-
+    addRecentQuery(trimmedQuery);
     router.push(`/?${params.toString()}`);
 
     setShowSearch(false);

@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import { strokeColor } from "./Constants";
 
 const SearchContext = createContext();
@@ -20,13 +20,32 @@ export function SearchProvider({ children }) {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Optional: strokeColor and dispatch placeholders (since they're in the value)
+  const [recentQueries, setRecentQueries] = useState([]); //helps store recent search queries
   const [strokeColor, setStrokeColor] = useState("#000"); // default color
-  // const dispatch = () => {}; // replace with actual logic if needed
 
-  // Function to set the currently playing video
-  // This will update both the ID for list highlighting and the object for the Hero
-  const setCurrentlyPlayingVideo = (video) => {
+  useEffect(() => {
+    try {
+      const storedQueries = localStorage.getItem("recentSearches");
+      if (storedQueries) {
+        setRecentQueries(JSON.parse(storedQueries));
+      }
+    } catch (e) {} // Handle potential localStorage errors
+  }, []);
+
+  function addRecentQuery(newQuery) {
+    if (!newQuery || newQuery.trim() === "") return;
+    const trimmedQuery = newQuery.trim();
+
+    setRecentQueries((prevQueries) => {
+      // Remove the new query if it already exists to avoid duplicates and move it to the front
+      const filteredQueries = prevQueries.filter((q) => q !== trimmedQuery);
+      const updatedQueries = [trimmedQuery, ...filteredQueries].slice(0, 5); // Keep only the latest 5
+      localStorage.setItem("recentSearches", JSON.stringify(updatedQueries));
+      return updatedQueries;
+    });
+  }
+
+  function setCurrentlyPlayingVideo(video) {
     if (video && video.id && video.id.videoId) {
       setCurrentPlayingId(video.id.videoId);
       setSelectedVideoObject(video);
@@ -35,7 +54,7 @@ export function SearchProvider({ children }) {
       setCurrentPlayingId(null);
       setSelectedVideoObject(null);
     }
-  };
+  }
 
   const value = useMemo(
     () => ({
@@ -45,6 +64,8 @@ export function SearchProvider({ children }) {
       setCurrentlyPlayingVideo, // Expose the new setter
       isFeedVisible,
       setIsFeedVisible,
+      recentQueries, // Expose recent queries
+      addRecentQuery, // Expose function to add queries
       error,
       setError,
       isLoading,
@@ -62,6 +83,7 @@ export function SearchProvider({ children }) {
       error,
       isLoading,
       strokeColor,
+      recentQueries,
     ]
   );
 

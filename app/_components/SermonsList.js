@@ -79,12 +79,12 @@ function VideoItem({ video, isPlaying, onPlay }) {
       }}
       aria-label={`Play ${video.snippet.title} in hero`}
     >
-      <div className="w-full h-[200px] relative bg-black">
+      <div className="w-full  relative bg-black">
         {isHoverPlaying && !isPlaying ? (
           <ReactPlayer
             url={`https://www.youtube.com/watch?v=${videoId}`}
             width="100%"
-            height="100%"
+            height="200px"
             loop
             playing
             muted={isHoverMuted}
@@ -105,7 +105,7 @@ function VideoItem({ video, isPlaying, onPlay }) {
           />
         ) : (
           <div
-            className="w-full h-full bg-cover bg-center"
+            className="w-full h-[200px] bg-cover bg-center"
             style={{
               backgroundImage: `url(https://img.youtube.com/vi/${videoId}/hqdefault.jpg)`,
             }}
@@ -116,29 +116,14 @@ function VideoItem({ video, isPlaying, onPlay }) {
           </div>
         )}
       </div>
-      <div className="flex items-center justify-between px-3 py-2 bg-primary-900 group-hover:bg-primary-800">
+      <div className="flex w-full items-center justify-between px-3 py-2 bg-primary-900 group-hover:bg-primary-800">
         <div>
           {" "}
-          <h3 className="truncate w-full text-sm lg:text-base transition-colors ">
+          <h3 className="truncate w-[20rem] mr-2 text-sm lg:text-base transition-colors ">
             {video.snippet.title}
           </h3>
         </div>
         <HiMiniArrowsPointingOut size={24} />
-
-        {/* <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsHoverMuted((prev) => !prev);
-          }}
-          className=" z-10 p-1.5 bg-black bg-opacity-50 rounded-full text-white hover:bg-opacity-75 transition-colors"
-          aria-label={isHoverMuted ? "Unmute preview" : "Mute preview"}
-        >
-          {isHoverMuted ? (
-            <HiOutlineSpeakerXMark className="w-5 h-5" />
-          ) : (
-            <HiOutlineSpeakerWave className="w-5 h-5" />
-          )}
-        </button> */}
       </div>
     </div>
   );

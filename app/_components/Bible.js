@@ -16,7 +16,11 @@ import {
 
 export default function Bible() {
   return (
-    <div>
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
+    >
       <BibleSearch fetchBibleData={fetchBibleData} />
     </div>
   );
