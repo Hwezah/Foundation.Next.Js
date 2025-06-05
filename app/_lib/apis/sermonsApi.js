@@ -17,7 +17,7 @@ export default async function Sermons({ query }) {
 
   const URL = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
     query
-  )}&maxResults=4&type=video&key=${API_KEY}`;
+  )}&maxResults=2&type=video&key=${API_KEY}`;
   try {
     const data = await fetchData(URL);
     console.log(data);

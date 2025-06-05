@@ -15,7 +15,7 @@ export default function SermonsList({ videos, initialNextPageToken }) {
     useState(initialNextPageToken);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
 
-  async function handleLoadMore() {
+  async function handleLoadMoreSermons() {
     if (!currentPageToken) {
       console.log("No more pages to load.");
       return;
@@ -26,7 +26,7 @@ export default function SermonsList({ videos, initialNextPageToken }) {
     try {
       const URL = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
         query
-      )}&maxResults=4&pageToken=${currentPageToken}&type=video&key=${API_KEY}`;
+      )}&maxResults=2&pageToken=${currentPageToken}&type=video&key=${API_KEY}`;
       const data = await fetchData(URL);
       console.log(data);
       setDisplayedVideos((prevVideos) => [...prevVideos, ...data.items]);
@@ -66,7 +66,7 @@ export default function SermonsList({ videos, initialNextPageToken }) {
           {currentPageToken && (
             <button
               className="flex flex-col items-center gap-2 mx-auto text-white px-4 py-2 rounded-lg cursor-pointer mt-4"
-              onClick={handleLoadMore}
+              onClick={handleLoadMoreSermons}
               disabled={isLoadingMore}
             >
               <AiOutlineReload className="w-6 h-6" />

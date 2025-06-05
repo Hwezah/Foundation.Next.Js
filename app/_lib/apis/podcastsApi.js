@@ -18,8 +18,11 @@ export default async function Podcasts({ query }) {
       headers: { "X-ListenAPI-Key": API_KEY },
     };
     const data = await fetchData(URL, endpoint);
+    console.log("Data:", data);
     const podcasts = data.results || [];
-    return <PodcastsList podcasts={podcasts} />;
+    return (
+      <PodcastsList podcasts={podcasts} initialNextOffset={data.next_offset} />
+    );
   } catch (error) {
     console.error("Error fetching podcasts", error);
     return <div>Failed to load podcasts.</div>;

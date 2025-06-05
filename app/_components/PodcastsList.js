@@ -1,23 +1,59 @@
 "use client";
 import { useState, useRef } from "react";
 import Image from "next/image";
-// import { useLocalStorage } from "@/app/_components/UseLocalStorage";
 import Spinner from "@/app/_components/Spinner";
 import { useSearch } from "./SearchContext";
+import fetchData from "../_lib/apis/api";
 import {
   HiOutlinePlay,
   HiOutlinePause,
   HiMiniArrowDownTray,
 } from "react-icons/hi2";
 import { AiOutlineReload } from "react-icons/ai";
-
-export default function PodcastsList({ podcasts }) {
-  const { isloading } = useSearch();
+export default function PodcastsList({ podcasts, initialNextOffset }) {
+  const { isloading, query, setIsLoading } = useSearch();
   const [playingPodcastId, setPlayingPodcastId] = useState(null);
   const [progress, setProgress] = useState({});
   const [isSeeking, setIsSeeking] = useState(false);
   const [selectedPodcastId, setSelectedPodcastId] = useState(null);
+  const [displayedPodcasts, setDisplayedPodcasts] = useState(podcasts);
+  const [currentOffset, setCurrentOffset] = useState(initialNextOffset);
   const audioRefs = useRef({}); // Store references to audio elements
+
+  async function handleLoadMorePodcasts() {
+    if (!currentOffset) {
+      console.log("No more pages to load.");
+      return;
+    }
+    setIsLoading(true);
+
+    const API_KEY = "f6402a826907452d912101ce2e4addf0";
+    const URL = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
+      query
+    )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&&safe_mode=0&offset=${currentOffset}&page_size=2`;
+
+    try {
+      const endpoint = {
+        headers: { "X-ListenAPI-Key": API_KEY },
+      };
+      const data = await fetchData(URL, endpoint);
+      if (data && data.results) {
+        setDisplayedPodcasts((prevPodcasts) => {
+          // filter out duplicates
+          const existingIds = new Set(prevPodcasts.map((p) => p.id));
+          const newUniquePodcasts = data.results.filter(
+            (podcast) => !existingIds.has(podcast.id)
+          );
+          return [...prevPodcasts, ...newUniquePodcasts];
+        });
+      }
+      setCurrentOffset(data.next_offset);
+    } catch (error) {
+      console.error("Error fetching podcasts", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   const handlePlayPause = (podcastId) => {
     const currentAudio = audioRefs.current[podcastId];
@@ -124,7 +160,7 @@ export default function PodcastsList({ podcasts }) {
       {isloading && <Spinner />}
       {/* {error && <p className="text-red-500">{error}</p>} */}
       <div className=" grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))]  gap-4 gap-y-2 md:gap-y-4 ">
-        {podcasts.map((podcast) => (
+        {displayedPodcasts.map((podcast) => (
           <div
             key={podcast.id}
             className={`${
@@ -278,12 +314,19 @@ export default function PodcastsList({ podcasts }) {
           </div>
         ))}
       </div>
-      <button
-        // onClick={handleLoadMorePodcasts}
-        className="flex items-center gap-2 mx-auto text-white px-4 py-2 rounded-lg cursor-pointer"
-      >
-        <AiOutlineReload className="w-6 h-6 mt-8" />
-      </button>
+      {isloading && <Spinner />}
+      {currentOffset && (
+        <div className="flex flex-col justify-center items-center ">
+          <button
+            // onClick={handleLoadMorePodcasts}
+            className="flex items-center gap-2 mx-auto text-white px-4 py-2 rounded-lg cursor-pointer"
+            onClick={handleLoadMorePodcasts}
+          >
+            <AiOutlineReload className="w-6 h-6 mt-8" />
+          </button>
+          <p>Load More</p>
+        </div>
+      )}
     </div>
   );
 }
