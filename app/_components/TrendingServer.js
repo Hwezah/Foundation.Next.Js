@@ -1,5 +1,5 @@
-import Podcasts from "@/app/_lib/apis/podcastsApi";
-import Sermons from "@/app/_lib/apis/sermonsApi";
+import Podcasts from "@/app/api/podcastsApi";
+import Sermons from "@/app/api/sermonsApi";
 import Bible from "./Bible";
 export default function TrendingServer({ selected, query }) {
   if (selected === "Podcasts") return <Podcasts query={query} />;

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { AiOutlineReload } from "react-icons/ai";
 import { HiMiniArrowsPointingOut } from "react-icons/hi2";
-import fetchData from "../_lib/apis/api";
+import fetchData from "../api/api";
 
 import { useSearch } from "./SearchContext";
 import { CiPlay1 } from "react-icons/ci";
@@ -21,12 +21,11 @@ export default function SermonsList({ videos, initialNextPageToken }) {
       return;
     }
     setIsLoadingMore(true);
-    const API_KEY = "AIzaSyA1NFxiq7v8qqA6HADR2Xgfg3NiWphCRXY";
 
     try {
-      const URL = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
+      const URL = `/api/sermons?query=${encodeURIComponent(
         query
-      )}&maxResults=2&pageToken=${currentPageToken}&type=video&key=${API_KEY}`;
+      )}&pageToken=${currentPageToken}`;
       const data = await fetchData(URL);
       console.log(data);
       setDisplayedVideos((prevVideos) => [...prevVideos, ...data.items]);

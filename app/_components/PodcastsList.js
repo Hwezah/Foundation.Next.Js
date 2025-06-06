@@ -3,7 +3,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import Spinner from "@/app/_components/Spinner";
 import { useSearch } from "./SearchContext";
-import fetchData from "../_lib/apis/api";
+import fetchData from "../api/api";
 import {
   HiOutlinePlay,
   HiOutlinePause,

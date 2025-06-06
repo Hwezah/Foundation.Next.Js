@@ -1,5 +1,5 @@
 import PodcastsList from "@/app/_components/PodcastsList";
-import fetchData from "@/app/_lib/apis/api";
+import fetchData from "@/app/api/api";
 
 // const API_KEY = "5499e7a41f314beaab46610580e99eaf";
 // const API_KEY = "8bdff6c6a5a94d2d9f43c1ad32b5d19e";

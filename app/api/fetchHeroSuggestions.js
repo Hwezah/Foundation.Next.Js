@@ -1,4 +1,4 @@
-import fetchData from "@/app/_lib/apis/api";
+import fetchData from "@/app/api/api";
 
 export async function fetchHeroSuggestions(query) {
   const API_KEY = "AIzaSyA_9QSamWQ-yBKdZCYbzI-ywkRy3fpGrWY";
