@@ -188,7 +188,7 @@ function VideoItem({
           className={`w-full h-[240px] relative ${
             // Apply border and rounding here
             isPlaying
-              ? "border-2 border-accent-500 rounded-t-lg overflow-hidden" // Ensure this div's border has rounded top corners and its content is clipped
+              ? "border-2 border-accent-500  overflow-hidden" // Ensure this div's border has rounded top corners and its content is clipped
               : ""
           }`}
         >
