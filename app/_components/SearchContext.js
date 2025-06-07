@@ -21,6 +21,10 @@ export function SearchProvider({ children }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const [recentQueries, setRecentQueries] = useState([]); //helps store recent search queries
+  const [activeHoverControllerIds, setActiveHoverControllerIds] = useState(
+    new Set()
+  );
+  // isHeroMuted state is removed as isHeroControlledByHover will manage this.
   const [strokeColor, setStrokeColor] = useState("#000"); // default color
 
   useEffect(() => {
@@ -56,6 +60,28 @@ export function SearchProvider({ children }) {
     }
   }
 
+  function addActiveHoverControllerId(videoId) {
+    setActiveHoverControllerIds((prev) => {
+      if (prev.has(videoId)) {
+        return prev; // Return previous Set instance if ID already exists
+      }
+      return new Set(prev).add(videoId); // Create new Set only if ID is new
+    });
+  }
+
+  function removeActiveHoverControllerId(videoId) {
+    setActiveHoverControllerIds((prev) => {
+      if (!prev.has(videoId)) {
+        return prev; // Return previous Set instance if ID doesn't exist
+      }
+      const next = new Set(prev);
+      next.delete(videoId);
+      return next;
+    });
+  }
+
+  const isHeroControlledByHover = activeHoverControllerIds.size > 0;
+
   const value = useMemo(
     () => ({
       query,
@@ -72,6 +98,9 @@ export function SearchProvider({ children }) {
       setIsLoading,
       strokeColor,
       setStrokeColor,
+      addActiveHoverControllerId, // Expose functions to manage hover controllers
+      removeActiveHoverControllerId,
+      isHeroControlledByHover, // Expose derived state for hero control
       selectedVideo: selectedVideoObject, // Keep selectedVideo for Hero
       // setSelectedVideo: setSelectedVideoObject, // Keep if direct setting is needed elsewhere
     }),
@@ -84,6 +113,7 @@ export function SearchProvider({ children }) {
       isLoading,
       strokeColor,
       recentQueries,
+      activeHoverControllerIds, // Add activeHoverControllerIds to dependency array
     ]
   );
 

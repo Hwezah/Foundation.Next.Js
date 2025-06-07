@@ -8,16 +8,11 @@ import fetchData from "@/app/api/api";
 export default async function Podcasts({ query }) {
   if (!query) return <div>No query provided</div>;
 
-  const API_KEY = "f6402a826907452d912101ce2e4addf0";
-  const URL = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
-    query
-  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&&safe_mode=0&offset=0&page_size=2`;
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const URL = `${baseUrl}/api/podcasts?query=${encodeURIComponent(query)}`;
 
   try {
-    const endpoint = {
-      headers: { "X-ListenAPI-Key": API_KEY },
-    };
-    const data = await fetchData(URL, endpoint);
+    const data = await fetchData(URL);
     console.log("Data:", data);
     const podcasts = data.results || [];
     return (

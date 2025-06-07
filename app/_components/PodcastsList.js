@@ -27,16 +27,12 @@ export default function PodcastsList({ podcasts, initialNextOffset }) {
     }
     setIsLoading(true);
 
-    const API_KEY = "f6402a826907452d912101ce2e4addf0";
-    const URL = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
+    const URL = `/api/podcasts?query=${encodeURIComponent(
       query
-    )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&&safe_mode=0&offset=${currentOffset}&page_size=2`;
+    )}&offset=${currentOffset}`;
 
     try {
-      const endpoint = {
-        headers: { "X-ListenAPI-Key": API_KEY },
-      };
-      const data = await fetchData(URL, endpoint);
+      const data = await fetchData(URL);
       if (data && data.results) {
         setDisplayedPodcasts((prevPodcasts) => {
           // filter out duplicates

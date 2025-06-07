@@ -32,7 +32,9 @@ export async function GET(request) {
   }
 
   try {
-    const youtubeResponse = await fetch(youtubeApiUrl);
+    const youtubeResponse = await fetch(youtubeApiUrl, {
+      cache: "no-store",
+    });
 
     if (!youtubeResponse.ok) {
       const errorData = await youtubeResponse.json();

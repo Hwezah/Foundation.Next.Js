@@ -12,7 +12,12 @@ import { HiChevronRight, HiChevronLeft } from "react-icons/hi2";
 import { fetchHeroSuggestions } from "../api/fetchHeroSuggestions";
 
 function Hero() {
-  const { selectedVideo, recentQueries, setQuery } = useSearch(); // Get recentQueries and setQuery
+  const {
+    selectedVideo,
+    recentQueries,
+    setQuery,
+    isHeroControlledByHover, // Get the derived state for hero control
+  } = useSearch();
   const [showBiblePanel, setShowBiblePanel] = useState(false);
   const [currentRecentQueryIndex, setCurrentRecentQueryIndex] = useState(0);
   const [heroSuggestion, setHeroSuggestion] = useState(null); // Renamed for clarity, stores suggestion data
@@ -177,10 +182,13 @@ function Hero() {
           )
         ) : (
           <div className="w-full aspect-video">
+            {/* Hero video should play if selected AND not paused/muted by a hover controller */}
             <VideoEmbed
               className=" shadow-none rounded-none w-full h-full object-cover "
               videoId={selectedVideo.id.videoId}
               title={selectedVideo.snippet.title}
+              muted={isHeroControlledByHover} // Mute if a hover item requests it
+              playing={!!selectedVideo && !isHeroControlledByHover} // Pause if a hover item requests it, otherwise play if selectedVideo exists
             />
           </div>
         )}
