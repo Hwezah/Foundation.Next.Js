@@ -3,15 +3,7 @@ import fetchData from "@/app/api/api";
 import SermonsList from "@/app/_components/SermonsList";
 export default async function Sermons({ query }) {
   if (!query || query.trim() === "") {
-    // Return an empty list or a message if the query is empty
-    // Ensure a key is also provided here for consistency if needed, or rely on query being different.
-    return (
-      <SermonsList
-        videos={[]}
-        initialNextPageToken={null}
-        key="no_query_sermons"
-      />
-    );
+    query = "Bible study essentials";
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -25,6 +17,7 @@ export default async function Sermons({ query }) {
         videos={sermons}
         initialNextPageToken={data.nextPageToken}
         key={query} // Add the query as a key
+        listQuery={query} // Pass the effective query used for this list
       />
     );
   } catch (error) {

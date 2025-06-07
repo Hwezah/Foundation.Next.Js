@@ -12,12 +12,17 @@ import { useSearch } from "./SearchContext";
 import { CiPlay1 } from "react-icons/ci";
 import ReactPlayer from "react-player/youtube";
 import Spinner from "./Spinner";
-export default function SermonsList({ videos, initialNextPageToken }) {
+export default function SermonsList({
+  videos,
+  initialNextPageToken,
+  listQuery,
+}) {
+  // Added listQuery prop
   const {
     playingVideoId,
     setCurrentlyPlayingVideo,
-    query,
-    addActiveHoverControllerId, // Get functions for hover control
+    // query, // Context query is no longer needed for load more here
+    addActiveHoverControllerId,
     removeActiveHoverControllerId,
   } = useSearch();
   const [displayedVideos, setDisplayedVideos] = useState(videos);
@@ -41,7 +46,7 @@ export default function SermonsList({ videos, initialNextPageToken }) {
 
     try {
       const URL = `/api/sermons?query=${encodeURIComponent(
-        query
+        listQuery // Use listQuery prop for loading more
       )}&pageToken=${currentPageToken}`;
       const data = await fetchData(URL);
       console.log(data);
