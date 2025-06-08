@@ -1,9 +1,6 @@
 import PodcastsList from "@/app/_components/PodcastsList";
 import fetchData from "@/app/api/api";
 
-// const API_KEY = "5499e7a41f314beaab46610580e99eaf";
-// const API_KEY = "8bdff6c6a5a94d2d9f43c1ad32b5d19e";
-// const API_KEY = "f6402a826907452d912101ce2e4addf0";
 
 export default async function Podcasts({ query }) {
   if (!query) return <div>No query provided</div>;
@@ -12,7 +9,7 @@ export default async function Podcasts({ query }) {
   const URL = `${baseUrl}/api/podcasts?query=${encodeURIComponent(query)}`;
 
   try {
-    const data = await fetchData(URL);
+    const data = await fetchData(URL, { cache: "no-store" });
     console.log("Data:", data);
     const podcasts = data.results || [];
     return (

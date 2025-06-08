@@ -69,7 +69,7 @@ export default function SermonsList({
 
       {videos && videos.length > 0 && (
         <>
-          <ul className="xl:p-10 md:p-4 sm:p-2 lg:p-6 !pt-0 grid grid-cols-[repeat(auto-fit,minmax(350px,1fr))] h-fit gap-4">
+          <ul className="xl:p-10 md:p-4 sm:p-2 lg:p-6 !pt-0 grid grid-cols-[repeat(auto-fit,minmax(300px,1fr))] gap-4">
             {displayedVideos.map((video) => (
               <VideoItem
                 key={
@@ -166,7 +166,7 @@ function VideoItem({
   return (
     <>
       <div
-        className="flex flex-col cursor-pointer rounded-lg transition-all duration-200 ease-in-out" // Removed overflow-hidden
+        className=" cursor-pointer rounded-lg overflow-hidden transition-all duration-200 ease-in-out" // Removed overflow-hidden
         onClick={() => {
           setIsHoverPlaying(false);
           setIsHoverMuted(true); // Reset to default muted state for next hover
@@ -190,10 +190,10 @@ function VideoItem({
         aria-label={`Play ${video.snippet.title} in hero`}
       >
         <div
-          className={`w-full h-[240px] relative ${
+          className={`w-full aspect-video rounded-lg overflow-hidden relative ${
             // Apply border and rounding here
             isPlaying
-              ? "border-2 border-accent-500  overflow-hidden" // Ensure this div's border has rounded top corners and its content is clipped
+              ? "border-2 border-accent-500 rounded-lg overflow-hidden" // Ensure this div's border has rounded top corners and its content is clipped
               : ""
           }`}
         >
@@ -242,7 +242,7 @@ function VideoItem({
               />
 
               {/* Custom controls */}
-              <div className="absolute bottom-0 left-0 right-0 p-2 z-20 ">
+              <div className="absolute bottom-0 left-0 right-0 px-2 z-20 ">
                 {/* Progress Bar Wrapper for larger click area */}
                 <div
                   className="pt-2 cursor-pointer" // Removed mb-1
@@ -311,7 +311,7 @@ function VideoItem({
                       e.stopPropagation();
                       setIsHoverMuted(!isHoverMuted);
                     }}
-                    className="p-1.5 bg-black bg-opacity-60 text-white rounded-full hover:bg-opacity-80 transition-opacity"
+                    className="p-1 text-white rounded-full hover:bg-opacity-80 transition-opacity"
                     aria-label={
                       isHoverMuted ? "Unmute preview" : "Mute preview"
                     }
@@ -327,7 +327,7 @@ function VideoItem({
             </>
           ) : (
             <div
-              className="w-full h-full bg-cover bg-center group"
+              className="w-full rounded-lg h-full bg-cover bg-center group"
               style={{
                 backgroundImage: `url(https://img.youtube.com/vi/${videoId}/hqdefault.jpg)`,
               }}
@@ -338,16 +338,13 @@ function VideoItem({
             </div>
           )}
         </div>
-
-        <div className="flex items-center justify-between px-3 py-2">
-          <div className="flex-1 w-[70%]">
-            <h3 className="truncate mr-2 text-sm lg:text-base transition-colors">
-              {video.snippet.title}
-            </h3>
-          </div>
-          <div className="ml-auto">
-            <HiMiniArrowsPointingOut size={24} />
-          </div>
+        <div className="flex items-center px-1 py-2 w-full">
+          <h3 className="truncate mr-2 text-sm lg:text-base transition-colors ">
+            {video.snippet.title}
+          </h3>
+          <span>
+            <HiMiniArrowsPointingOut size={20} />
+          </span>
         </div>
       </div>
     </>

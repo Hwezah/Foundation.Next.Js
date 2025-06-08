@@ -24,7 +24,7 @@ export async function GET(request) {
   // Construct the base URL
   let youtubeApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
     query
-  )}&maxResults=2&type=video&key=${API_KEY}`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
+  )}&maxResults=5&type=video&key=${API_KEY}`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
 
   // Conditionally add pageToken if it exists
   if (pageToken) {
@@ -63,11 +63,3 @@ export async function GET(request) {
     );
   }
 }
-
-// const API_KEY = "AIzaSyA1NFxiq7v8qqA6HADR2Xgfg3NiWphCRXY";
-//   const query = "your search"; // Replace or get from props/params
-//   const API_KEY = "AIzaSyA_9QSamWQ-yBKdZCYbzI-ywkRy3fpGrWY";
-//   const API_KEY = "AIzaSyB-t8E-UrOC8CMTfpjLdMd7dZUejXvwx1c";
-//   const API_KEY = "AIzaSyCNyHlY3nfI0eJYR7_xHTobtrRTX3puk94";
-//    const API_KEY = "AIzaSyCyDM6zL56RjPY62zE30wi6TweFQXjCIYo";
-// const API_KEY = "AIzaSyA1NFxiq7v8qqA6HADR2Xgfg3NiWphCRXY";

@@ -9,7 +9,7 @@ export default async function Sermons({ query }) {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const URL = `${baseUrl}/api/sermons?query=${encodeURIComponent(query)}`;
   try {
-    const data = await fetchData(URL); // Ensure this fetch is not cached
+    const data = await fetchData(URL, { cache: "no-store" }); // Ensure this fetch is not cached
     console.log(data);
     const sermons = data.items || [];
     return (
