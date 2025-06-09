@@ -151,7 +151,7 @@ function Hero() {
                       e.stopPropagation();
                       handlePrevRecentQuery();
                     }}
-                    className="absolute left-8 top-1/2 -translate-y-1/2 z-10 opacity-30 hover:bg-opacity-50 rounded-full transition-all  group-hover:opacity-100 hover:scale-110  duration-200"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 z-10 opacity-30 hover:bg-opacity-50 rounded-full transition-all  group-hover:opacity-100 hover:scale-110  duration-200"
                     aria-label="Previous recent search"
                   >
                     <HiChevronRight className="text-4xl sm:text-5xl md:text-6xl" />
@@ -161,7 +161,7 @@ function Hero() {
                       e.stopPropagation();
                       handleNextRecentQuery();
                     }}
-                    className="absolute right-8 top-1/2 -translate-y-1/2 z-10 hover:bg-opacity-50 rounded-full opacity-30 transition-all group-hover:opacity-100 hover:scale-110  duration-200"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 z-10 hover:bg-opacity-50 rounded-full opacity-30 transition-all group-hover:opacity-100 hover:scale-110  duration-200"
                     aria-label="Next recent search"
                   >
                     <HiChevronLeft className="text-4xl sm:text-5xl md:text-6xl" />
@@ -206,8 +206,8 @@ function Hero() {
       </div>
       {/* Toggle Button for the Panel */}
       <button
-        className="absolute top-24 right-8 -translate-y-1/2 transform cursor-pointer z-30
-          rounded-full p-2 opacity-30 hover:bg-opacity-100 hover:scale-110 
+        className="absolute top-24 right-4 -translate-y-1/2 transform cursor-pointer z-30
+          rounded-full  opacity-30 hover:bg-opacity-100 hover:scale-110 
           transition-all duration-200"
         onClick={(e) => {
           e.stopPropagation();
