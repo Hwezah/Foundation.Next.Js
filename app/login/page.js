@@ -5,9 +5,9 @@ import Button from "./Button";
 import { useForm } from "react-hook-form";
 import SelectCountry from "./SelectCountry";
 import Image from "next/image";
-export const metadata = {
-  title: "Login / Foundation",
-};
+// export const metadata = {
+//   title: "Login / Foundation",
+// };
 export default function Page() {
   const countryFlag = "pt.jpg";
   const nationality = "portugal";
