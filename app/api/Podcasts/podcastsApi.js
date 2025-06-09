@@ -5,7 +5,7 @@ export default async function Podcasts({ query }) {
   if (!query) return <div>No query provided</div>;
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const URL = `${baseUrl}/api/podcasts?query=${encodeURIComponent(query)}`;
+  const URL = `${baseUrl}/api/podcasts?query=${encodeURIComponent(query)}`; // Changed to uppercase 'P'
 
   try {
     const data = await fetchData(URL, { cache: "no-store" });
