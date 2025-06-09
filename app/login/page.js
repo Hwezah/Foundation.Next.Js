@@ -1,7 +1,7 @@
 "use client";
 import "@/app/_styles/globals.css";
 import { useState } from "react";
-import Button from "./Button";
+import Button from "../_components/Button";
 import { useForm } from "react-hook-form";
 import SelectCountry from "../_components/SelectCountry";
 import Image from "next/image";

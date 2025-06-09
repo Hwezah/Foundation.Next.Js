@@ -1,4 +1,4 @@
-import Podcasts from "@/app/api/podcasts/podcastsApi"; // Changed to uppercase 'P'
+import Podcasts from "../api/podcasts/podcastsApi";
 import Sermons from "@/app/api/sermons/sermonsApi";
 import Bible from "./Bible";
 export default function TrendingServer({ selected, query }) {
