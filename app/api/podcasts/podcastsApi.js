@@ -1,21 +1,96 @@
 import PodcastsList from "@/app/_components/PodcastsList";
-import fetchData from "@/app/api/api";
 
-export default async function Podcasts({ query }) {
-  if (!query) return <div>No query provided</div>;
+async function fetchListenNotesPodcasts(query, offset = null) {
+  const API_KEY = process.env.LISTEN_NOTES_API_KEY;
+  if (!API_KEY) {
+    console.error("LISTEN_NOTES_API_KEY is not set in environment variables.");
+    throw new Error(
+      "Server configuration error: LISTEN_NOTES_API_KEY is missing."
+    );
+  }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const URL = `${baseUrl}/api/podcasts?query=${encodeURIComponent(query)}`; // Changed to uppercase 'P'
+  // ListenNotes API default maxResults is 10.
+  // Adjust parameters like `type`, `sort_by_date` as needed.
+  let listenNotesApiUrl = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
+    query
+  )}&type=episode&sort_by_date=0&language=English`; // Added language for specificity
+
+  if (offset) {
+    // The API route /api/podcasts will handle subsequent offsets for pagination by the client.
+    listenNotesApiUrl += `&offset=${offset}`;
+  }
 
   try {
-    const data = await fetchData(URL, { cache: "no-store" });
-    console.log("Data:", data);
+    const response = await fetch(listenNotesApiUrl, {
+      headers: { "X-ListenAPI-Key": API_KEY },
+      cache: "no-store", // Or your preferred caching strategy for server-side initial fetch
+    });
+
+    if (!response.ok) {
+      let apiErrorContent = "";
+      try {
+        const errorData = await response.json();
+        if (errorData && errorData.message) {
+          apiErrorContent = errorData.message;
+        } else if (errorData && Object.keys(errorData).length > 0) {
+          // If there's an error body but no 'message' field, stringify it.
+          // Avoids stringifying an empty object to "{}"
+          apiErrorContent = JSON.stringify(errorData);
+        }
+      } catch (e) {
+        // This catch is for when response.json() itself fails (e.g., not valid JSON, or empty response)
+        apiErrorContent = "Could not parse error response body.";
+      }
+
+      const statusText = response.statusText || "No status text";
+      let errorDetails = `Status ${response.status} (${statusText})`;
+      if (apiErrorContent && apiErrorContent !== "{}") {
+        // Don't append if it's just an empty stringified object
+        errorDetails += `: ${apiErrorContent}`;
+      }
+
+      console.error("Listen Notes API Error (direct fetch):", errorDetails);
+      throw new Error(
+        `Failed to fetch podcasts from Listen Notes API: ${errorDetails}`
+      );
+    }
+    return await response.json();
+  } catch (error) {
+    if (
+      !(
+        error.message.startsWith(
+          "Failed to fetch podcasts from Listen Notes API"
+        ) || error.message.startsWith("Server configuration error")
+      )
+    ) {
+      console.error(
+        "Error fetching podcasts directly from Listen Notes:",
+        error
+      );
+    }
+    throw error;
+  }
+}
+
+export default async function Podcasts({ query }) {
+  if (!query || query.trim() === "") {
+    query = "Christian teachings"; // Default query if none provided
+  }
+
+  try {
+    // Directly call the fetching logic for the initial load
+    const data = await fetchListenNotesPodcasts(query); // Initial fetch, no offset
     const podcasts = data.results || [];
     return (
-      <PodcastsList podcasts={podcasts} initialNextOffset={data.next_offset} />
+      <PodcastsList
+        podcasts={podcasts}
+        initialNextOffset={data.next_offset} // ListenNotes API uses 'next_offset'
+        key={query} // Ensures the component re-renders if the query changes
+        // listQuery={query} // PodcastsList.js uses context query for "load more"
+      />
     );
   } catch (error) {
-    console.error("Error fetching podcasts", error);
+    console.error("Error preparing podcasts component:", error);
     return (
       <div className="text-red-500 text-center">
         Failed to load podcasts due to an error ({error.message})
@@ -23,58 +98,3 @@ export default async function Podcasts({ query }) {
     );
   }
 }
-
-// Fetch and set podcasts
-// async function fetchAndSetPodcasts(query, offset = 0, append = false) {
-//   try {
-//     dispatch({ type: "LOADING" });
-//     dispatch({ type: "REJECTED", payload: "" });
-
-//     const results = await PodcastsApi(query, offset);
-//     const nextOffset = offset + 2; // 4 = page_size
-//     localStorage.setItem("nextPage", nextOffset); // Update next page offset in localStorage
-
-//     setPodcasts((prev) => {
-//       if (append) {
-//         const existingIds = new Set(prev.map((p) => p.id));
-//         const newUnique = results.filter((p) => !existingIds.has(p.id));
-//         return [...prev, ...newUnique];
-//       } else {
-//         return results;
-//       }
-//     });
-//   } catch (error) {
-//     dispatch({ type: "REJECTED", payload: error.message });
-//   } finally {
-//     dispatch({ type: "LOADED" });
-//   }
-// }
-
-// // Initial fetch when query changes
-// useEffect(() => {
-//   if (!query || typeof query !== "string" || query.trim() === "") {
-//     return;
-//   }
-
-//   localStorage.setItem("nextPage", 4); // Set initial next page offset
-//   fetchAndSetPodcasts(query, 0, false); // Fetch and set the first set of podcasts
-// }, [query, dispatch]);
-
-// Load more podcasts
-// async function handleLoadMorePodcasts() {
-//   const nextPage = parseInt(localStorage.getItem("nextPage"), 10); // Parse offset from localStorage
-
-//   if (!query || query.trim() === "") {
-//     dispatch({
-//       type: "REJECTED",
-//       payload: "Please enter a valid search term.",
-//     });
-//     return;
-//   }
-
-//   if (!isNaN(nextPage)) {
-//     await fetchAndSetPodcasts(query, nextPage, true); // true = append results
-//   } else {
-//     dispatch({ type: "REJECTED", payload: "No more results" });
-//   }
-// }
