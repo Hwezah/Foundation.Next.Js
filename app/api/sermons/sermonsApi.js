@@ -9,7 +9,7 @@ async function fetchYouTubeSermons(query, pageToken = null) {
 
   let youtubeApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
     query
-  )}&maxResults=4&type=video&key=${API_KEY}`;
+  )}&maxResults=1&type=video&key=${API_KEY}`; // DIAGNOSTIC: Temporarily reduce to 1 result
 
   if (pageToken) {
     youtubeApiUrl += `&pageToken=${pageToken}`;
