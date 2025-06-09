@@ -154,7 +154,7 @@ function Hero() {
                     className="absolute left-8 top-1/2 -translate-y-1/2 z-10 opacity-30 hover:bg-opacity-50 rounded-full transition-all  group-hover:opacity-100 hover:scale-110  duration-200"
                     aria-label="Previous recent search"
                   >
-                    <HiChevronRight size={62} />
+                    <HiChevronRight className="text-4xl sm:text-5xl md:text-6xl" />
                   </button>
                   <button
                     onClick={(e) => {
@@ -164,7 +164,7 @@ function Hero() {
                     className="absolute right-8 top-1/2 -translate-y-1/2 z-10 hover:bg-opacity-50 rounded-full opacity-30 transition-all group-hover:opacity-100 hover:scale-110  duration-200"
                     aria-label="Next recent search"
                   >
-                    <HiChevronLeft size={62} />
+                    <HiChevronLeft className="text-4xl sm:text-5xl md:text-6xl" />
                   </button>
                 </>
               )}
@@ -218,9 +218,9 @@ function Hero() {
         }
       >
         {showBiblePanel ? (
-          <BsArrowRightCircleFill size={62} />
+          <BsArrowRightCircleFill className="text-4xl sm:text-5xl md:text-6xl" />
         ) : (
-          <BsArrowLeftCircleFill size={62} />
+          <BsArrowLeftCircleFill className="text-4xl sm:text-5xl md:text-6xl" />
         )}
       </button>
     </div>
