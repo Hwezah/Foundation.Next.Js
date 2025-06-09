@@ -338,11 +338,15 @@ function VideoItem({
             </div>
           )}
         </div>
-        <div className="flex items-center px-1 py-2 w-full">
-          <h3 className="truncate mr-2 text-sm lg:text-base transition-colors ">
+        <div className="flex items-center justify-between p-1 w-full">
+          <h3 className="truncate text-sm lg:text-base transition-colors ">
+            {" "}
+            {/* Removed mr-2 */}
             {video.snippet.title}
           </h3>
-          <span>
+          <span className="flex-shrink-0">
+            {" "}
+            {/* Added flex-shrink-0 as a good practice */}
             <HiMiniArrowsPointingOut size={20} />
           </span>
         </div>
