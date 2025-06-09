@@ -24,7 +24,7 @@ export async function GET(request) {
   // Construct the base URL
   let youtubeApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
     query
-  )}&maxResults=5&type=video&key=${API_KEY}`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
+  )}&maxResults=4&type=video&key=${API_KEY}`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
 
   // Conditionally add pageToken if it exists
   if (pageToken) {

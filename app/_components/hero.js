@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation"; // Import useRouter
 import Image from "next/image";
 import { BsArrowLeftCircleFill, BsArrowRightCircleFill } from "react-icons/bs";
 import { HiChevronRight, HiChevronLeft } from "react-icons/hi2";
-import { fetchHeroSuggestions } from "../api/fetchHeroSuggestions";
+import { fetchHeroSuggestions } from "../api/hero/fetchHeroSuggestions";
 
 function Hero() {
   const {

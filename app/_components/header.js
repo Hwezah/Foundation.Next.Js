@@ -13,12 +13,6 @@ export default function Header() {
     <>
       <div className="flex items-center justify-between lg:p-4 p-2.5  w-full xl:px-10 md:px-4 sm:px-2 lg:px-6">
         <div className="flex items-center">
-          {/* <Image
-            src="Assets\FoundationLogoWhite.svg"
-            alt="Foundation Logo"
-            fill
-            className="w-[74px] hidden lg:block  object-cover"
-          /> */}
           <h1
             className={`xl:text-4xl md:text-3xl text-2xl font-black ${
               showSearch ? "hidden sm:block" : "block"

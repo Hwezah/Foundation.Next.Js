@@ -19,11 +19,6 @@ export default function UserDashboard() {
           <FaHeart className="w-6 h-6 cursor-pointer" />
         </Link>
       </div>
-      <div>
-        <Link href="/cast">
-          <MdOutlineCast className="w-6 h-6 cursor-pointer" />
-        </Link>
-      </div>
       <Link href="/notifications">
         <HiOutlineBellAlert className="w-6 h-6 cursor-pointer" />
       </Link>
@@ -32,11 +27,11 @@ export default function UserDashboard() {
           <HiOutlineUser className="w-6 h-6 cursor-pointer" />
         </Link>
       </div>
-      <div className="hidden sm:block">
+      {/* <div className="hidden sm:block">
         <Link href="/settings">
           <HiAdjustmentsHorizontal className="w-6 h-6 cursor-pointer" />
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 }
