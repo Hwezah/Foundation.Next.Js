@@ -301,7 +301,7 @@ function VideoItem({
                     onClick={(e) => e.stopPropagation()} // Stop propagation for direct clicks on the input itself
                   />
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center pb-1">
                   <span className="text-xs text-white font-mono">
                     {formatTime(hoverProgress.playedSeconds)} /{" "}
                     {formatTime(hoverProgress.duration)}
