@@ -190,7 +190,7 @@ function VideoItem({
         aria-label={`Play ${video.snippet.title} in hero`}
       >
         <div
-          className={`w-full aspect-video rounded-lg overflow-hidden relative ${
+          className={`w-full aspect-video overflow-hidden relative ${
             // Apply border and rounding here
             isPlaying
               ? "border-2 border-accent-500 rounded-lg overflow-hidden" // Ensure this div's border has rounded top corners and its content is clipped
