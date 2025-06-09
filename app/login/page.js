@@ -61,7 +61,7 @@ export default function Page() {
             <div className="flex items-center justify-between relative">
               <label htmlFor="nationality">Where are you from?</label>
               <Image
-                full
+                fill // Changed 'full' to 'fill'
                 src={countryFlag}
                 alt="Country flag"
                 className="h-5 rounded-sm object-cover"

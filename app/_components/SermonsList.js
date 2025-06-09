@@ -297,12 +297,12 @@ function VideoItem({
                       e.stopPropagation();
                       setIsSeekingHover(false);
                     }}
-                    className="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer range-sm accent-accent-500"
+                    className="w-full h-1 bg-gray-700 rounded-lg appearance-none cursor-pointer range-sm accent-accent-500"
                     onClick={(e) => e.stopPropagation()} // Stop propagation for direct clicks on the input itself
                   />
                 </div>
-                <div className="flex justify-between items-center pb-1">
-                  <span className="text-xs text-white font-mono">
+                <div className="flex justify-between items-center pb-2">
+                  <span className="text-xs m-0 p-0 text-white font-mono">
                     {formatTime(hoverProgress.playedSeconds)} /{" "}
                     {formatTime(hoverProgress.duration)}
                   </span>
@@ -311,7 +311,7 @@ function VideoItem({
                       e.stopPropagation();
                       setIsHoverMuted(!isHoverMuted);
                     }}
-                    className="p-1 text-white rounded-full hover:bg-opacity-80 transition-opacity"
+                    className=" m-0 p-0 text-white rounded-full hover:bg-opacity-80 transition-opacity"
                     aria-label={
                       isHoverMuted ? "Unmute preview" : "Mute preview"
                     }
