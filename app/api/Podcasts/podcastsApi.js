@@ -1,7 +1,6 @@
 import PodcastsList from "@/app/_components/PodcastsList";
 import fetchData from "@/app/api/api";
 
-
 export default async function Podcasts({ query }) {
   if (!query) return <div>No query provided</div>;
 
@@ -17,7 +16,11 @@ export default async function Podcasts({ query }) {
     );
   } catch (error) {
     console.error("Error fetching podcasts", error);
-    return <div>Failed to load podcasts.</div>;
+    return (
+      <div className="text-red-500 text-center">
+        Failed to load podcasts due to an error ({error.message})
+      </div>
+    );
   }
 }
 
