@@ -3,7 +3,7 @@ import "@/app/_styles/globals.css";
 import { useState } from "react";
 import Button from "./Button";
 import { useForm } from "react-hook-form";
-import SelectCountry from "./SelectCountry";
+import SelectCountry from "../_components/SelectCountry";
 import Image from "next/image";
 // export const metadata = {
 //   title: "Login / Foundation",
