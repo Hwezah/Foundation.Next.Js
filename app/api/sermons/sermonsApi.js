@@ -22,6 +22,10 @@ export default async function Sermons({ query }) {
     );
   } catch (error) {
     console.error("Error fetching sermons", error);
-    return <div>Failed to load sermons.</div>;
+    return (
+      <div className="text-red-500 text-center">
+        Failed to load podcasts due to an error ({error.message})
+      </div>
+    );
   }
 }
