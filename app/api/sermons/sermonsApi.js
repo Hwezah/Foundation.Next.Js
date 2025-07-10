@@ -1,75 +1,186 @@
+"use client";
+import { useEffect, useState } from "react";
 import SermonsList from "@/app/_components/SermonsList";
+import Spinner from "@/app/_components/Spinner";
 
-async function fetchYouTubeSermons(query, pageToken = null) {
-  const API_KEY = process.env.YOUTUBE_API_KEY;
-  if (!API_KEY) {
-    console.error("YOUTUBE_API_KEY is not set in environment variables.");
-    throw new Error("Server configuration error: YOUTUBE_API_KEY is missing.");
-  }
+const LAST_SEARCHED_QUERY_KEY = "sermons_last_searched_query";
+const DEFAULT_QUERY = "Jesus";
 
-  let youtubeApiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(
-    query
-  )}&maxResults=4&type=video&key=${API_KEY}`; // DIAGNOSTIC: Temporarily reduce to 1 result
+export default function Sermons({ query: queryFromProp }) {
+  // Initialize effectiveQuery to undefined. It will be set by a client-side effect.
+  const [effectiveQuery, setEffectiveQuery] = useState(undefined);
+  const [sermonsData, setSermonsData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isClientMounted, setIsClientMounted] = useState(false);
 
-  if (pageToken) {
-    youtubeApiUrl += `&pageToken=${pageToken}`;
-  }
+  // Set client mounted flag
+  useEffect(() => {
+    setIsClientMounted(true);
+  }, []);
 
-  try {
-    const youtubeResponse = await fetch(youtubeApiUrl, {
-      cache: "no-store",
-    });
+  // Determine effectiveQuery based on prop or localStorage (client-side only)
+  useEffect(() => {
+    if (!isClientMounted) {
+      // console.log("SermonsApi: Client not mounted yet, skipping query determination.");
+      return;
+    }
+    // console.log("SermonsApi: Client mounted, determining query source.");
 
-    if (!youtubeResponse.ok) {
-      let errorDetails = "Unknown YouTube API error";
-      try {
-        const errorData = await youtubeResponse.json();
-        errorDetails = errorData.error?.message || JSON.stringify(errorData);
-      } catch (e) {
-        errorDetails = `Status: ${youtubeResponse.status}, StatusText: ${youtubeResponse.statusText}`;
+    const determineQuery = () => {
+      const trimmedProp = queryFromProp?.trim();
+      // If queryFromProp is provided (even if empty string), it takes precedence.
+      if (trimmedProp !== undefined) {
+        return trimmedProp;
       }
-      console.error("YouTube API Error (direct fetch):", errorDetails);
-      throw new Error(
-        `Failed to fetch sermons from YouTube API: ${errorDetails}`
-      );
-    }
-    return await youtubeResponse.json();
-  } catch (error) {
-    if (
-      !(
-        error.message.startsWith("Failed to fetch sermons from YouTube API") ||
-        error.message.startsWith("Server configuration error")
-      )
-    ) {
-      console.error("Error fetching sermons directly from YouTube:", error);
-    }
-    throw error;
-  }
-}
+      try {
+        const storedQuery = localStorage
+          .getItem(LAST_SEARCHED_QUERY_KEY)
+          ?.trim();
+        if (storedQuery) {
+          // console.log(`SermonsApi: Using localStorage query: "${storedQuery}"`);
+          return storedQuery;
+        }
+      } catch (e) {
+        console.error("SermonsApi: Error accessing localStorage", e);
+      }
+      // console.log(`SermonsApi: Using DEFAULT_QUERY: "${DEFAULT_QUERY}"`);
+      return DEFAULT_QUERY;
+    };
 
-export default async function Sermons({ query }) {
-  if (!query || query.trim() === "") {
-    query = "Bible study essentials";
-  }
+    const newQuery = determineQuery();
+    setEffectiveQuery(newQuery); // React handles not re-rendering if value is the same
+  }, [queryFromProp, isClientMounted]); // effectiveQuery removed from dependencies
 
-  try {
-    // Directly call the fetching logic instead of an internal HTTP request
-    const data = await fetchYouTubeSermons(query); // Initial fetch, no pageToken
-    const sermons = data.items || [];
+  useEffect(() => {
+    // Guard against running on server or if query is not yet determined/empty.
+    if (!isClientMounted || !effectiveQuery || !effectiveQuery.trim()) {
+      // If effectiveQuery is explicitly an empty string (but not undefined),
+      // ensure loading is false and data is cleared.
+      if (effectiveQuery === "" && isClientMounted) {
+        setIsLoading(false);
+        setSermonsData(null);
+        setError(null);
+      }
+      return;
+    }
+
+    const trimmedQuery = effectiveQuery.trim();
+    let isCancelled = false;
+
+    const fetchSermons = async () => {
+      setIsLoading(true);
+      setError(null);
+      // setSermonsData(null); // Optionally clear previous results immediately
+
+      try {
+        const res = await fetch(
+          `/api/sermons?query=${encodeURIComponent(trimmedQuery)}`,
+          {
+            cache: "no-store",
+          }
+        );
+
+        if (!res.ok) {
+          let msg = `API error: ${res.status}`;
+          try {
+            const data = await res.json();
+            msg = data.error || data.details || msg;
+          } catch {}
+          throw new Error(msg);
+        }
+
+        const data = await res.json();
+        if (isCancelled) return;
+        setSermonsData(data);
+
+        const firstItem = data?.items?.[0];
+        const thumbnailUrl =
+          firstItem?.snippet?.thumbnails?.maxres?.url ||
+          firstItem?.snippet?.thumbnails?.standard?.url ||
+          firstItem?.snippet?.thumbnails?.high?.url;
+
+        if (thumbnailUrl) {
+          localStorage.setItem(`hero_image_${trimmedQuery}`, thumbnailUrl);
+          localStorage.setItem(LAST_SEARCHED_QUERY_KEY, trimmedQuery);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error("Error fetching sermons:", err);
+          setError(err.message || "Something went wrong");
+          setSermonsData(null);
+        }
+      } finally {
+        if (!isCancelled) setIsLoading(false);
+      }
+    };
+
+    fetchSermons();
+    return () => {
+      isCancelled = true;
+    };
+  }, [effectiveQuery, isClientMounted]); // Add isClientMounted to dependencies
+
+  // Show initializing state if client isn't mounted or query hasn't been determined
+  // if (effectiveQuery) {
+  //   return (
+  //     <div className="text-center p-4">
+  //       <Spinner />
+  //       <p>Initializing search...</p>
+  //     </div>
+  //   );
+  // }
+
+  // isLoading is true during active fetch for a valid query
+  if (isLoading) {
     return (
-      <SermonsList
-        videos={sermons}
-        initialNextPageToken={data.nextPageToken}
-        key={query} // Add the query as a key
-        listQuery={query} // Pass the effective query used for this list
-      />
-    );
-  } catch (error) {
-    console.error("Error preparing sermons component", error);
-    return (
-      <div className="text-red-500 text-center">
-        Failed to load sermons due to an error ({error.message})
+      <div className="text-center p-4">
+        <Spinner />
+        <p>Loading sermons for &quot;{effectiveQuery}&quot;...</p>
       </div>
     );
   }
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center p-4">
+        Failed to load sermons: {error}
+        {effectiveQuery && <p>(Searched for: &quot;{effectiveQuery}&quot;)</p>}
+      </div>
+    );
+  }
+
+  // Handle cases where effectiveQuery is an empty string (after trimming)
+  if (!effectiveQuery?.trim()) {
+    return (
+      <div className="text-center p-4 text-gray-500">
+        Enter a search term to find sermons.
+      </div>
+    );
+  }
+
+  if (sermonsData?.items?.length > 0) {
+    return (
+      <SermonsList
+        videos={sermonsData.items}
+        initialNextPageToken={sermonsData.nextPageToken}
+        key={effectiveQuery}
+        listQuery={effectiveQuery}
+      />
+    );
+  }
+
+  if (sermonsData && sermonsData.items?.length === 0) {
+    return (
+      <div className="text-center p-4 text-gray-500">
+        No sermons found for &quot;{effectiveQuery}&quot;.
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-center p-4 text-gray-400">
+      No sermons to display...Try a different search.
+    </div>
+  );
 }

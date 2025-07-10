@@ -1,6 +1,5 @@
 "use client";
 import { createContext, useContext, useMemo, useState, useEffect } from "react";
-import { strokeColor } from "./Constants";
 
 const SearchContext = createContext();
 

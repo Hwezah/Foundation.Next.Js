@@ -4,12 +4,12 @@ import { useSearch } from "./SearchContext";
 import { VideoEmbed } from "@/app/_components/SermonsList";
 // import FoundationUtilities from "./FoundationUtilities";
 import Bible from "./Bible";
-import React, { memo, useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
+import React, { memo, useState, useEffect, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { BsArrowLeftCircleFill, BsArrowRightCircleFill } from "react-icons/bs";
-import { HiChevronRight, HiChevronLeft } from "react-icons/hi2";
-import { fetchHeroSuggestions } from "../api/hero/fetchHeroSuggestions";
+import { HiChevronLeft, HiChevronRight } from "react-icons/hi2";
+// fetchHeroSuggestions is no longer needed here
 
 function Hero() {
   const {
@@ -20,40 +20,36 @@ function Hero() {
   } = useSearch();
   const [showBiblePanel, setShowBiblePanel] = useState(false);
   const [currentRecentQueryIndex, setCurrentRecentQueryIndex] = useState(0);
-  const [heroSuggestion, setHeroSuggestion] = useState(null); // Renamed for clarity, stores suggestion data
-  const [isLoadingHeroBg, setIsLoadingHeroBg] = useState(false);
+  const [currentHeroImageUrl, setCurrentHeroImageUrl] = useState(
+    "/pexels-jibarofoto-13963623.jpg"
+  ); // Default fallback
   const autoSlideIntervalRef = useRef(null);
   const router = useRouter();
 
   useEffect(() => {
-    // This effect will fetch suggestions based on the current recent query index
+    // This effect will set the hero background image based on the current recent query
     if (recentQueries && recentQueries.length > 0) {
       const currentQuery = recentQueries[currentRecentQueryIndex];
       if (currentQuery) {
-        setIsLoadingHeroBg(true);
-        setHeroSuggestion(null); // Clear previous suggestion
-
-        // fetchHeroSuggestions(currentQuery)
-        //   .then((data) => {
-        //     console.log("Hero suggestion data:", data);
-        //     setHeroSuggestion(data);
-        //   })
-        //   .catch((err) => {
-        //     console.error("Error fetching hero suggestion:", err);
-        //     setHeroSuggestion(null); // Clear on error
-        //   })
-        //   .finally(() => setIsLoadingHeroBg(false));
+        const cachedImageUrl = localStorage.getItem(
+          `hero_image_${currentQuery}`
+        ); // Trimming removed here
+        setCurrentHeroImageUrl(
+          cachedImageUrl || "/pexels-jibarofoto-13963623.jpg"
+        );
       }
     } else {
-      setHeroSuggestion(null); // No recent queries
+      setCurrentHeroImageUrl("/pexels-jibarofoto-13963623.jpg"); // Fallback if no recent queries
     }
-  }, [recentQueries, currentRecentQueryIndex]); // Re-fetch when recent queries or index changes
+  }, [recentQueries, currentRecentQueryIndex]); // Re-run when recent queries or index changes
 
-  const advanceToNextQuery = () => {
+  const advanceToNextQuery = useCallback(() => {
     setCurrentRecentQueryIndex((prevIndex) =>
-      prevIndex === recentQueries.length - 1 ? 0 : prevIndex + 1
+      recentQueries && prevIndex === recentQueries.length - 1
+        ? 0
+        : prevIndex + 1
     );
-  };
+  }, [recentQueries]);
 
   useEffect(() => {
     // Auto-slide functionality
@@ -68,7 +64,7 @@ function Hero() {
         clearInterval(autoSlideIntervalRef.current);
       }
     };
-  }, [recentQueries, selectedVideo]); // Re-initialize interval if recentQueries change or video is selected/deselected
+  }, [recentQueries, selectedVideo, advanceToNextQuery]); // Re-initialize interval if recentQueries change or video is selected/deselected
 
   const resetAutoSlideTimer = () => {
     if (autoSlideIntervalRef.current) {
@@ -96,18 +92,7 @@ function Hero() {
     resetAutoSlideTimer();
   };
 
-  const thumbnails = heroSuggestion?.items?.[0]?.snippet?.thumbnails;
-  let imageUrl = "/pexels-jibarofoto-13963623.jpg"; // Fallback
-
-  if (thumbnails) {
-    imageUrl =
-      thumbnails.maxres?.url ||
-      thumbnails.standard?.url ||
-      thumbnails.high?.url ||
-      imageUrl;
-  }
-
-  const backgroundStyle = { backgroundImage: `url(${imageUrl})` };
+  const backgroundStyle = { backgroundImage: `url(${currentHeroImageUrl})` };
 
   return (
     <div
@@ -126,9 +111,7 @@ function Hero() {
             <div className="w-full relative group">
               {/* Image for the current recent query - covers the hero */}
               <div
-                className={`w-full h-[70vh] bg-cover bg-center ${
-                  isLoadingHeroBg ? "animate-pulse bg-gray-700" : ""
-                }`}
+                className="w-full h-[70vh] bg-cover bg-center"
                 style={backgroundStyle}
               ></div>
               {/* Overlay for text and search button */}
@@ -170,13 +153,16 @@ function Hero() {
               )}
             </div>
           ) : (
-            <div className="w-full relative">
+            // Fallback when no recent queries and no selected video
+            <div className="w-full relative h-[70vh]">
+              {" "}
+              {/* Ensured height for fallback */}
               <Image
                 className="object-cover object-center "
                 fill
                 priority
                 src="/pexels-jibarofoto-13963623.jpg"
-                alt="Foundation"
+                alt="Foundation Welcome"
               />
             </div>
           )

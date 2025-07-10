@@ -12,10 +12,6 @@ export default function QuerySyncer() {
   useEffect(() => {
     const currentSearchParamsString = searchParams.toString();
     const urlQuery = searchParams.get("query");
-
-    // Only sync from URL to context if:
-    // 1. The URL's search parameters have actually changed OR
-    // 2. It's the initial mount of this component.
     if (
       currentSearchParamsString !== prevSearchParamsString.current ||
       isInitialMount.current

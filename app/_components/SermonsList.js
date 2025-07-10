@@ -212,12 +212,14 @@ function VideoItem({
                 config={{
                   youtube: {
                     playerVars: {
-                      autoplay: 1,
-                      modestbranding: 1,
-                      controls: 0,
-                      disablekb: 1,
-                      showinfo: 0,
-                      rel: 0,
+                      autoplay: 1, // Autoplay the video
+                      modestbranding: 1, // Reduce YouTube logo
+                      controls: 0, // Hide player controls
+                      disablekb: 1, // Disable keyboard controls
+                      showinfo: 0, // Hide video title/uploader (deprecated but often included)
+                      rel: 0, // Do not show related videos at the end
+                      iv_load_policy: 3, // Disable video annotations
+                      fs: 0, // Disable fullscreen button
                     },
                   },
                 }}
