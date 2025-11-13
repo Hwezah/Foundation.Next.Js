@@ -12,7 +12,9 @@ export async function GET(request) {
     );
   }
 
-  const API_KEY = process.env.PODCAST_API_KEY;
+  const API_KEY = process.env.LISTEN_NOTES_API_KEY;
+
+ 
   if (!API_KEY) {
     console.error("PODCAST_API_KEY is not set in environment variables.");
     return NextResponse.json(
@@ -24,7 +26,7 @@ export async function GET(request) {
   // Construct the base URL
   let podcastApiUrl = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
     query
-  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&&safe_mode=0&page_size=2`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
+  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&safe_mode=0&page_size=2`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
 
   // Conditionally add pageToken if it exists
   if (offset) {

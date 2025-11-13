@@ -1,7 +1,10 @@
+console.log("*** PODCASTS API FILE LOADED ***");
 import PodcastsList from "@/app/_components/PodcastsList";
 
 async function fetchListenNotesPodcasts(query, offset = null) {
+
   const API_KEY = process.env.LISTEN_NOTES_API_KEY;
+
   if (!API_KEY) {
     console.error("LISTEN_NOTES_API_KEY is not set in environment variables.");
     throw new Error(
