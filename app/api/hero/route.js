@@ -1,4 +1,3 @@
-// g:\foundation(Client..Next.js Refactor)\app\api\hero-suggestions\route.js
 import { NextResponse } from "next/server";
 
 export async function GET(request) {
