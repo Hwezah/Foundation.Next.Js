@@ -108,12 +108,16 @@ function Hero() {
       >
         {!selectedVideo ? (
           recentQueries && recentQueries.length > 0 ? (
-            <div className="w-full relative group">
+            <div className="w-full relative aspect-video">
               {/* Image for the current recent query - covers the hero */}
-              <div
-                className="w-full h-[70vh] bg-cover bg-center"
-                style={backgroundStyle}
-              ></div>
+              <Image
+                src={currentHeroImageUrl}
+                alt={recentQueries[currentRecentQueryIndex] || "Hero image"}
+                fill
+                className="object-cover object-center"
+                priority
+                unoptimized
+              />
               {/* Overlay for text and search button */}
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 p-4 cursor-pointer">
                 <div className="absolute top-6 left-6">
@@ -154,15 +158,16 @@ function Hero() {
             </div>
           ) : (
             // Fallback when no recent queries and no selected video
-            <div className="w-full relative h-[70vh]">
+            <div className="w-full relative aspect-video">
               {" "}
-              {/* Ensured height for fallback */}
+              {/* Ensured aspect ratio for fallback */}
               <Image
                 className="object-cover object-center "
                 fill
                 priority
                 src="/pexels-jibarofoto-13963623.jpg"
                 alt="Foundation Welcome"
+                unoptimized
               />
             </div>
           )
