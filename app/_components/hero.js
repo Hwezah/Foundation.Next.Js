@@ -96,7 +96,7 @@ function Hero() {
 
   return (
     <div
-      className=" relative overflow-hidden h-full"
+      className=" overflow-hidden h-full cursor-pointer w-full sticky top-0 z-10"
       onClick={(e) => {
         e.stopPropagation();
         handleRecentSearchClick(recentQueries[currentRecentQueryIndex]);
@@ -104,7 +104,7 @@ function Hero() {
     >
       <div
         className={`bg-[#01212c] w-full sticky top-0 z-10
-          xl:flex xl:justify-between items-start scrollbar-hidden overflow-hidden`}
+          xl:flex xl:justify-between items-start scrollbar-hidden overflow-hidden cursor-pointer `}
       >
         {!selectedVideo ? (
           recentQueries && recentQueries.length > 0 ? (
