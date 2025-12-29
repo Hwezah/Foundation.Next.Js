@@ -26,7 +26,7 @@ export async function GET(request) {
   // Construct the base URL
   let podcastApiUrl = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
     query
-  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&safe_mode=0&page_size=2`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
+  )}&type=episode&sort_by_date=1&len_min=0&len_max=0&only_in=title,query,fulltext&safe_mode=0&page_size=4`; // Set your desired maxResults. It was 4 in sermonsApi.js, now 2.
 
   // Conditionally add pageToken if it exists
   if (offset) {
