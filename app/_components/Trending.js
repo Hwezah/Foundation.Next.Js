@@ -2,8 +2,8 @@
 // React is still fine, but client-specific hooks/features like 'memo' are removed.
 import React from "react";
 import ContentBar from "./ContentBar.client"; // Import the extracted Client Component
-import Podcasts from "@/app/api/podcasts/podcastsApi";
-import Sermons from "@/app/api/sermons/sermonsApi";
+import Podcasts from "@/app/_lib/podcastsApi";
+import Sermons from "@/app/_lib/sermonsApi";
 
 export default async function Trending({ searchParams: rawSearchParams }) {
   // Await rawSearchParams if it's a promise, then default to an empty object if it's null/undefined.

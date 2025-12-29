@@ -1,7 +1,7 @@
 // import { useSearch } from "../SearchContext";
 "use client";
 import { useState, useEffect } from "react"; // Import useEffect
-import { fetchBibleData } from "../api/bible/bibleApi";
+import { fetchBibleData } from "@/app/_lib/bibleApi";
 import Fuse from "fuse.js";
 import { useSearch } from "./SearchContext";
 import { useMemo } from "react";

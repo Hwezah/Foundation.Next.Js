@@ -16,7 +16,7 @@ async function fetchListenNotesPodcasts(query, offset = null) {
   // Adjust parameters like `type`, `sort_by_date` as needed.
   let listenNotesApiUrl = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
     query
-  )}&type=episode&sort_by_date=0&language=English`; // Added language for specificity
+  )}&type=episode&sort_by_date=0&language=English&offset=4`; // Added language for specificity
 
   if (offset) {
     // The API route /api/podcasts will handle subsequent offsets for pagination by the client.

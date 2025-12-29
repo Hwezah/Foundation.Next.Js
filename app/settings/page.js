@@ -1,8 +1,8 @@
-import Settings from "../settings/page";
-export default function Page() {
+export default function SettingsPage() {
   return (
     <div>
-      <Settings />
+      <h1>Settings</h1>
+      {/* Add your settings content here */}
     </div>
   );
 }
