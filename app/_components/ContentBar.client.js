@@ -16,7 +16,7 @@ export default function ContentBar({ selected }) {
   ];
 
   return (
-    <div className="flex mb-4  xl:px-10 md:px-4 sm:px-2 lg:px-6 overflow-x-auto justify-between gap-4 text-sm lg:text-md font-bold scrollbar-hidden">
+    <div className="flex mb-4  xl:px-10 md:px-4 sm:px-2 lg:px-6 overflow-x-auto justify-between gap-4 text-sm lg:text-md font-bold scrollbar-hidden px-4">
       {categories.map((category) => {
         const currentQuery = searchParams.get("query");
         let href = `?selected=${encodeURIComponent(category)}`;
