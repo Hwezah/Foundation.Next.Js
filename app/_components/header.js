@@ -4,8 +4,9 @@ import UserDashboard from "./UserDashboard";
 import { useSearch } from "./SearchContext";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Image from "next/image";
+
 import { HiMiniMagnifyingGlass } from "react-icons/hi2";
+import Link from "next/link";
 
 export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
@@ -13,13 +14,14 @@ export default function Header() {
     <>
       <div className="flex items-center justify-between lg:p-4 p-2.5  w-full xl:px-10 md:px-4 sm:px-2 lg:px-6">
         <div className="flex items-center">
-          <h1
-            className={`xl:text-4xl md:text-3xl text-2xl font-black ${
-              showSearch ? "hidden sm:block" : "block"
-            }`}
-          >
-            Foundation.
-          </h1>
+          <Link href="/">
+            <h1
+              className={`xl:text-4xl md:text-3xl text-2xl font-black ${
+                showSearch ? "hidden sm:block" : "block"
+              }`}
+            >
+              Foundation.
+          </h1></Link>
         </div>
         <div className="flex items-center justify-between lg:gap-4 gap-1.5 ">
           <SearchBar showSearch={showSearch} setShowSearch={setShowSearch} />
