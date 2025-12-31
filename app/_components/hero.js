@@ -96,7 +96,7 @@ function Hero() {
 
   return (
     <div
-      className=" overflow-hidden h-full cursor-pointer w-full sticky top-0 z-10"
+      className=" h-full cursor-pointer w-full sticky top-0 z-10"
       onClick={(e) => {
         e.stopPropagation();
         handleRecentSearchClick(recentQueries[currentRecentQueryIndex]);
@@ -186,7 +186,7 @@ function Hero() {
       </div>
       {/* Sliding Panel (FoundationUtilities from left) */}
       <div
-        className={`absolute top-0 right-0 h-full z-20 bg-[#01212c]
+        className={`absolute top-0 right-0 h-screen z-20 bg-[#01212c]
           transition-transform duration-300 ease-in-out transform
           ${showBiblePanel ? "translate-x-0" : "translate-x-full"}
           w-full sm:w-3/4 md:w-1/2 xl:w-[40%]
