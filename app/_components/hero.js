@@ -186,7 +186,7 @@ function Hero() {
       </div>
       {/* Sliding Panel (FoundationUtilities from left) */}
       <div
-        className={`absolute top-0 right-0 h-screen z-20 bg-[#01212c]
+        className={`fixed top-0 right-0 h-screen z-20 bg-[#01212c]
           transition-transform duration-300 ease-in-out transform
           ${showBiblePanel ? "translate-x-0" : "translate-x-full"}
           w-full sm:w-3/4 md:w-1/2 xl:w-[40%]
