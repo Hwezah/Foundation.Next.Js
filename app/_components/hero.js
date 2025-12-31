@@ -96,19 +96,19 @@ function Hero() {
 
   return (
     <div
-      className=" h-full cursor-pointer w-full sticky top-0 z-10"
+      className=" cursor-pointer w-full sticky lg:static top-0 z-10 "
       onClick={(e) => {
         e.stopPropagation();
         handleRecentSearchClick(recentQueries[currentRecentQueryIndex]);
       }}
     >
       <div
-        className={`bg-[#01212c] w-full sticky top-0 z-10
+        className={`bg-[#01212c] w-full sticky lg:static top-0 z-10
           xl:flex xl:justify-between items-start scrollbar-hidden overflow-hidden cursor-pointer `}
       >
         {!selectedVideo ? (
           recentQueries && recentQueries.length > 0 ? (
-            <div className="w-full relative aspect-video">
+            <div className="w-full relative aspect-video xl:max-h-[60vh]">
               {/* Image for the current recent query - covers the hero */}
               <Image
                 src={currentHeroImageUrl}
