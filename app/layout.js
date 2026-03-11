@@ -14,7 +14,16 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="bg-[#01222e]">
         <div className="max-w-9xl mx-auto">
-          <ClerkProvider>{children}</ClerkProvider>
+          <ClerkProvider
+            appearance={{
+              variables: {
+                colorPrimary: "#01222e",
+                colorText: "#ffffff",
+              },
+            }}
+          >
+            {children}
+          </ClerkProvider>
         </div>
       </body>
     </html>

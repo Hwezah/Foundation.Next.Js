@@ -278,7 +278,7 @@ export const BibleSearch = ({ fetchBibleData }) => {
   };
 
   return (
-    <div className="p-4 w-full mx-auto">
+    <div className="p-4 px-2  w-full mx-auto">
       <form
         className="flex gap-1 justify-end mb-3"
         onSubmit={(e) => {

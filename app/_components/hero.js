@@ -21,7 +21,7 @@ function Hero() {
   const [showBiblePanel, setShowBiblePanel] = useState(false);
   const [currentRecentQueryIndex, setCurrentRecentQueryIndex] = useState(0);
   const [currentHeroImageUrl, setCurrentHeroImageUrl] = useState(
-    "/pexels-jibarofoto-13963623.jpg"
+    "/pexels-jibarofoto-13963623.jpg",
   ); // Default fallback
   const autoSlideIntervalRef = useRef(null);
   const router = useRouter();
@@ -32,10 +32,10 @@ function Hero() {
       const currentQuery = recentQueries[currentRecentQueryIndex];
       if (currentQuery) {
         const cachedImageUrl = localStorage.getItem(
-          `hero_image_${currentQuery}`
+          `hero_image_${currentQuery}`,
         ); // Trimming removed here
         setCurrentHeroImageUrl(
-          cachedImageUrl || "/pexels-jibarofoto-13963623.jpg"
+          cachedImageUrl || "/pexels-jibarofoto-13963623.jpg",
         );
       }
     } else {
@@ -47,7 +47,7 @@ function Hero() {
     setCurrentRecentQueryIndex((prevIndex) =>
       recentQueries && prevIndex === recentQueries.length - 1
         ? 0
-        : prevIndex + 1
+        : prevIndex + 1,
     );
   }, [recentQueries]);
 
@@ -87,7 +87,7 @@ function Hero() {
 
   const handlePrevRecentQuery = () => {
     setCurrentRecentQueryIndex((prevIndex) =>
-      prevIndex === 0 ? recentQueries.length - 1 : prevIndex - 1
+      prevIndex === 0 ? recentQueries.length - 1 : prevIndex - 1,
     );
     resetAutoSlideTimer();
   };
@@ -96,7 +96,7 @@ function Hero() {
 
   return (
     <div
-      className=" cursor-pointer w-full sticky lg:static top-0 z-10 "
+      className="relative cursor-pointer w-full sticky lg:static top-0 z-10 "
       onClick={(e) => {
         e.stopPropagation();
         handleRecentSearchClick(recentQueries[currentRecentQueryIndex]);
@@ -208,11 +208,13 @@ function Hero() {
           showBiblePanel ? "Close utilities panel" : "Open utilities panel"
         }
       >
-        {showBiblePanel ? (
-          <BsArrowRightCircleFill className="text-4xl sm:text-5xl md:text-6xl" />
-        ) : (
-          <BsArrowLeftCircleFill className="text-4xl sm:text-5xl md:text-6xl" />
-        )}
+        <div className="lg:mt-12 lg:mb-0 mb-24 -mr-2 md:mr-0">
+          {showBiblePanel ? (
+            <BsArrowRightCircleFill className="text-4xl sm:text-5xl md:text-6xl" />
+          ) : (
+            <BsArrowLeftCircleFill className="text-4xl sm:text-5xl md:text-6xl" />
+          )}
+        </div>
       </button>
     </div>
   );

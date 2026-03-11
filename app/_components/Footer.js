@@ -1,7 +1,9 @@
 "use client";
+import { UserButton } from "@clerk/nextjs";
+import Login from "./login";
+import { useUser } from "@clerk/nextjs";
 import {
   HiAdjustmentsHorizontal,
-  HiOutlineUser,
   HiOutlineHome,
   HiOutlineRectangleStack,
   HiOutlineVideoCamera,
@@ -9,6 +11,7 @@ import {
 } from "react-icons/hi2";
 import Link from "next/link";
 export default function Footer() {
+  const { isSignedIn } = useUser();
   return (
     <nav className="sm:hidden p-3 bg-[#01212c] mt-auto">
       <ul className="flex justify-between items-center">
@@ -41,10 +44,7 @@ export default function Footer() {
           </Link>
         </li>
         <li>
-          <Link href="/user">
-            <HiOutlineUser className="w-6 h-6" />
-            {/* <span>Settings</span> */}
-          </Link>
+          <div className="">{isSignedIn ? <UserButton /> : <Login />}</div>
         </li>
       </ul>
     </nav>
