@@ -1,11 +1,12 @@
 "use client";
-import { HiOutlineUser } from "react-icons/hi";
+import { UserButton } from "@clerk/nextjs";
+import Login from "./login";
 import Link from "next/link";
-import { MdOutlineCast } from "react-icons/md";
-import { HiAdjustmentsHorizontal, HiOutlineBellAlert } from "react-icons/hi2";
+import { HiOutlineBellAlert } from "react-icons/hi2";
 import { FaHeart } from "react-icons/fa";
-
+import { useUser } from "@clerk/nextjs";
 export default function UserDashboard() {
+  const { isSignedIn, user } = useUser();
   return (
     <div
       // className={`flex justify-between gap-4 ${
@@ -23,15 +24,8 @@ export default function UserDashboard() {
         <HiOutlineBellAlert className="w-6 h-6 cursor-pointer" />
       </Link>
       <div className="hidden sm:block">
-        <Link href="/user">
-          <HiOutlineUser className="w-6 h-6 cursor-pointer" />
-        </Link>
+        {isSignedIn ? <UserButton /> : <Login />}
       </div>
-      {/* <div className="hidden sm:block">
-        <Link href="/settings">
-          <HiAdjustmentsHorizontal className="w-6 h-6 cursor-pointer" />
-        </Link>
-      </div> */}
     </div>
   );
 }

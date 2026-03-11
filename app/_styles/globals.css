@@ -117,3 +117,22 @@
 }
 
 /* Add this in your global CSS or Tailwind's `@layer` if using JIT mode */
+:root {
+  --clerk-color-background: #212126;
+  --clerk-color-neutral: white;
+  --clerk-color-primary: #ffffff;
+  --clerk-color-primary-foreground: black;
+  --clerk-color-foreground: white;
+  --clerk-color-input-foreground: white;
+  --clerk-color-input: #26262b;
+}
+
+.dark {
+  --clerk-color-background: #212126;
+  --clerk-color-neutral: white;
+  --clerk-color-primary: #ffffff;
+  --clerk-color-primary-foreground: black;
+  --clerk-color-foreground: white;
+  --clerk-color-input-foreground: white;
+  --clerk-color-input: #26262b;
+}
