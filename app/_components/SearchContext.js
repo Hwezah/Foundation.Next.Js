@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useMemo, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
 const SearchContext = createContext();
 
@@ -12,7 +12,6 @@ export function useSearch() {
 }
 
 export function SearchProvider({ children }) {
-  const [query, setQuery] = useState("");
   const [selectedVideoObject, setSelectedVideoObject] = useState(null); // Stores the full video object for the Hero
   const [currentPlayingId, setCurrentPlayingId] = useState(null); // Stores only the ID of the playing video
   const [isFeedVisible, setIsFeedVisible] = useState(true);
@@ -21,7 +20,7 @@ export function SearchProvider({ children }) {
 
   const [recentQueries, setRecentQueries] = useState([]); //helps store recent search queries
   const [activeHoverControllerIds, setActiveHoverControllerIds] = useState(
-    new Set()
+    new Set(),
   );
   // isHeroMuted state is removed as isHeroControlledByHover will manage this.
   const [strokeColor, setStrokeColor] = useState("#000"); // default color
@@ -83,8 +82,6 @@ export function SearchProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      query,
-      setQuery,
       playingVideoId: currentPlayingId, // Expose the ID
       setCurrentlyPlayingVideo, // Expose the new setter
       isFeedVisible,
@@ -104,7 +101,6 @@ export function SearchProvider({ children }) {
       // setSelectedVideo: setSelectedVideoObject, // Keep if direct setting is needed elsewhere
     }),
     [
-      query,
       selectedVideoObject,
       currentPlayingId,
       isFeedVisible,
@@ -113,7 +109,7 @@ export function SearchProvider({ children }) {
       strokeColor,
       recentQueries,
       activeHoverControllerIds, // Add activeHoverControllerIds to dependency array
-    ]
+    ],
   );
 
   return (

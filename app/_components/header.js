@@ -1,12 +1,12 @@
 "use client";
 import UserDashboard from "./UserDashboard";
 
-import { useSearch } from "./SearchContext";
-import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
+import { useSearch } from "./SearchContext";
 
-import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 import Link from "next/link";
+import { HiMiniMagnifyingGlass } from "react-icons/hi2";
 
 export default function Header() {
   const [showSearch, setShowSearch] = useState(false);
@@ -21,7 +21,8 @@ export default function Header() {
               }`}
             >
               Foundation.
-          </h1></Link>
+            </h1>
+          </Link>
         </div>
         <div className="flex items-center justify-between lg:gap-4 gap-1.5 ">
           <SearchBar showSearch={showSearch} setShowSearch={setShowSearch} />
@@ -35,14 +36,21 @@ export default function Header() {
   );
 }
 function SearchBar({ showSearch, setShowSearch }) {
-  const { query, setQuery, addRecentQuery } = useSearch(); // Use query and setQuery from context
+  const { addRecentQuery } = useSearch(); // Use query and setQuery from context
   const router = useRouter();
   const currentSearchParams = useSearchParams();
   const [isSmallScreen, setIsSmallScreen] = useState(false);
+  const [inputValue, setInputValue] = useState(
+    currentSearchParams.get("query") || "",
+  );
+
+  useEffect(() => {
+    setInputValue(currentSearchParams.get("query") || "");
+  }, [currentSearchParams]);
 
   const handleSearchSubmit = useCallback(() => {
     const selectedCategory = currentSearchParams.get("selected") || "Sermons";
-    const trimmedQuery = query ? query.trim() : "";
+    const trimmedQuery = inputValue.trim();
 
     // Preserve existing search params and update query and selected
     const params = new URLSearchParams(currentSearchParams.toString());
@@ -63,7 +71,7 @@ function SearchBar({ showSearch, setShowSearch }) {
       setShowSearch(false);
     }
   }, [
-    query,
+    inputValue,
     router,
     currentSearchParams,
     setShowSearch,
@@ -113,8 +121,8 @@ function SearchBar({ showSearch, setShowSearch }) {
 
       {/* Full search bar */}
       <input
-        value={query || ""}
-        onChange={(e) => setQuery(e.target.value)}
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
         className={`flex xl:w-[350px] rounded-full bg-[#01222e] px-6 py-1.5 sm:py-2.5 xl:py-3 transition-all duration-300 md:focus:w-[400px] font-bold text-gray-500 focus:outline-none ${
           showSearch ? "block" : "hidden"
         } md:block`}

@@ -1,11 +1,10 @@
 "use client";
-import { usePathname } from "next/navigation";
-import Hero from "@/app/_components/hero";
 import Footer from "@/app/_components/Footer";
 import Header from "@/app/_components/header";
-import { Josefin_Sans } from "next/font/google";
+import Hero from "@/app/_components/hero";
 import { SearchProvider } from "@/app/_components/SearchContext";
-import QuerySyncer from "./_components/QuerySyncer"; // Import the new component
+import { Josefin_Sans } from "next/font/google";
+import { usePathname } from "next/navigation";
 // The Trending component (which is now a Server Component)
 // will be passed as a prop (slot) from a parent Server Component,
 // so we remove the direct import here.
@@ -21,7 +20,6 @@ export default function AppBody({ children, trendingSlot }) {
   const shouldShowHero = !hideHeroRoutes.includes(pathname);
   return (
     <SearchProvider>
-      <QuerySyncer />
       <div
         className={`${josefin.className} min-h-screen bg-primary-950 text-primary-100 flex flex-col antialiased `}
       >
