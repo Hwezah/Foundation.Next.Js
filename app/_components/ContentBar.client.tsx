@@ -2,8 +2,8 @@
 import React from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-
-export default function ContentBar({ selected }) {
+type ContentBarProps = { selected: string };
+export default function ContentBar({ selected }: ContentBarProps) {
   const searchParams = useSearchParams();
   const categories = [
     "Sermons",

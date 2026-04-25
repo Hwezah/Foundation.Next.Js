@@ -19,6 +19,7 @@
 // export default eslintConfig;
 import nextPlugin from "@next/eslint-plugin-next";
 import globals from "globals";
+import typescriptParser from "@typescript-eslint/parser";  // ← ADD THIS
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 const eslintConfig = [
@@ -27,13 +28,21 @@ const eslintConfig = [
     plugins: {
       "@next/next": nextPlugin,
     },
+    languageOptions: {  // ← MODIFIED
+      parser: typescriptParser,  // ← ADD THIS
+      parserOptions: {           // ← ADD THIS
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: {
+          jsx: true
+        }
+      },
+      globals: { ...globals.browser, ...globals.node }
+    },
     rules: {
-      // Next.js recommends enabling all the rules via plugin
       "@next/next/no-html-link-for-pages": "warn",
       "@next/next/no-img-element": "warn",
-      // add any custom overrides here
     },
-    languageOptions: { globals: { ...globals.browser, ...globals.node } },
   },
 ];
 

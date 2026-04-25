@@ -6,57 +6,56 @@ import Spinner from "@/app/_components/Spinner";
 const LAST_SEARCHED_QUERY_KEY = "sermons_last_searched_query";
 const DEFAULT_QUERY = "Jesus";
 
-export default function Sermons({ query: queryFromProp }) {
-  // Initialize effectiveQuery to undefined. It will be set by a client-side effect.
-  const [effectiveQuery, setEffectiveQuery] = useState(undefined);
-  const [sermonsData, setSermonsData] = useState(null);
+type SermonsProps = {
+  query?: string;
+};
+
+type SermonsData = {
+  items?: any[] 
+  nextPageToken?: string
+}
+export default function Sermons({ query: queryFromProp }: SermonsProps) {
+  const [effectiveQuery, setEffectiveQuery] = useState<string | undefined>(undefined);
+  const [sermonsData, setSermonsData] = useState<SermonsData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [isClientMounted, setIsClientMounted] = useState(false);
 
-  // Set client mounted flag
   useEffect(() => {
     setIsClientMounted(true);
   }, []);
 
-  // Determine effectiveQuery based on prop or localStorage (client-side only)
   useEffect(() => {
-    if (!isClientMounted) {
-      // console.log("SermonsApi: Client not mounted yet, skipping query determination.");
-      return;
-    }
-    // console.log("SermonsApi: Client mounted, determining query source.");
+    if (!isClientMounted) return;
 
     const determineQuery = () => {
       const trimmedProp = queryFromProp?.trim();
-      // If queryFromProp is provided (even if empty string), it takes precedence.
+
       if (trimmedProp !== undefined) {
         return trimmedProp;
       }
+
       try {
         const storedQuery = localStorage
           .getItem(LAST_SEARCHED_QUERY_KEY)
           ?.trim();
+
         if (storedQuery) {
-          // console.log(`SermonsApi: Using localStorage query: "${storedQuery}"`);
           return storedQuery;
         }
       } catch (e) {
         console.error("SermonsApi: Error accessing localStorage", e);
       }
-      // console.log(`SermonsApi: Using DEFAULT_QUERY: "${DEFAULT_QUERY}"`);
+
       return DEFAULT_QUERY;
     };
 
     const newQuery = determineQuery();
-    setEffectiveQuery(newQuery); // React handles not re-rendering if value is the same
-  }, [queryFromProp, isClientMounted]); // effectiveQuery removed from dependencies
+    setEffectiveQuery(newQuery);
+  }, [queryFromProp, isClientMounted]);
 
   useEffect(() => {
-    // Guard against running on server or if query is not yet determined/empty.
     if (!isClientMounted || !effectiveQuery || !effectiveQuery.trim()) {
-      // If effectiveQuery is explicitly an empty string (but not undefined),
-      // ensure loading is false and data is cleared.
       if (effectiveQuery === "" && isClientMounted) {
         setIsLoading(false);
         setSermonsData(null);
@@ -71,14 +70,11 @@ export default function Sermons({ query: queryFromProp }) {
     const fetchSermons = async () => {
       setIsLoading(true);
       setError(null);
-      // setSermonsData(null); // Optionally clear previous results immediately
 
       try {
         const res = await fetch(
           `/api/sermons?query=${encodeURIComponent(trimmedQuery)}`,
-          {
-            cache: "no-store",
-          }
+          { cache: "no-store" }
         );
 
         if (!res.ok) {
@@ -92,6 +88,7 @@ export default function Sermons({ query: queryFromProp }) {
 
         const data = await res.json();
         if (isCancelled) return;
+
         setSermonsData(data);
 
         const firstItem = data?.items?.[0];
@@ -107,7 +104,8 @@ export default function Sermons({ query: queryFromProp }) {
       } catch (err) {
         if (!isCancelled) {
           console.error("Error fetching sermons:", err);
-          setError(err.message || "Something went wrong");
+          const message = err instanceof Error ? err.message : "Unknown error";
+          setError(message || "Something went wrong");
           setSermonsData(null);
         }
       } finally {
@@ -116,22 +114,12 @@ export default function Sermons({ query: queryFromProp }) {
     };
 
     fetchSermons();
+
     return () => {
       isCancelled = true;
     };
-  }, [effectiveQuery, isClientMounted]); // Add isClientMounted to dependencies
+  }, [effectiveQuery, isClientMounted]);
 
-  // Show initializing state if client isn't mounted or query hasn't been determined
-  // if (effectiveQuery) {
-  //   return (
-  //     <div className="text-center p-4">
-  //       <Spinner />
-  //       <p>Initializing search...</p>
-  //     </div>
-  //   );
-  // }
-
-  // isLoading is true during active fetch for a valid query
   if (isLoading) {
     return (
       <div className="text-center p-4">
@@ -150,7 +138,6 @@ export default function Sermons({ query: queryFromProp }) {
     );
   }
 
-  // Handle cases where effectiveQuery is an empty string (after trimming)
   if (!effectiveQuery?.trim()) {
     return (
       <div className="text-center p-4 text-gray-500">
@@ -159,7 +146,7 @@ export default function Sermons({ query: queryFromProp }) {
     );
   }
 
-  if (sermonsData?.items?.length > 0) {
+  if (sermonsData && sermonsData.items && sermonsData.items.length > 0) {
     return (
       <SermonsList
         videos={sermonsData.items}

@@ -1,6 +1,6 @@
 // import { useSearch } from "../SearchContext";
 "use client";
-import { useState, useEffect } from "react"; // Import useEffect
+import { useState, useEffect, useCallback } from "react"; // Import useEffect
 import { fetchBibleData } from "@/app/_lib/bibleApi";
 import Fuse from "fuse.js";
 import { useSearch } from "./SearchContext";
@@ -26,17 +26,22 @@ export default function Bible() {
   );
 }
 
-export const BibleSearch = ({ fetchBibleData }) => {
+type BibleSearchProps = {
+  fetchBibleData: (endpoint: string) => Promise<any>
+}
+
+export const BibleSearch = ({ fetchBibleData }: BibleSearchProps) => {
+
   const [verse, setVerse] = useState("");
   const [chapter, setChapter] = useState("");
   const [book, setBook] = useState("");
-  const { isLoading, setIsLoading, error, setError } = useSearch(); // Get setters from context
+  const { isLoading, setIsLoading, error, setError } = useSearch();
   const [result, setResult] = useState(null);
   const BIBLE_IDS = {
     KJV: "f276be3571f516cb-01",
     GANDA: "de4e12af7f28f599-01",
   };
-  const [bibleVersion, setBibleVersion] = useState("KJV");
+  const [bibleVersion, setBibleVersion] = useState<"KJV" | "GANDA">("KJV");
   const bibleId = useMemo(() => BIBLE_IDS[bibleVersion], [bibleVersion]);
 
   const [isVerseByVerse, setIsVerseByVerse] = useState(false);
@@ -182,11 +187,11 @@ export const BibleSearch = ({ fetchBibleData }) => {
     // Other versions
   };
 
-  const normalizeBook = (input) => {
+  const normalizeBook = (input: string): string | null => {
     const userInput = input.trim().toLowerCase();
 
     // 1. Exact match (abbreviation or name)
-    for (const version of Object.keys(booksByVersion)) {
+    for (const version of Object.keys(booksByVersion) as (keyof typeof booksByVersion)[]) {
       const mapping = booksByVersion[version];
       for (const [abbr, name] of Object.entries(mapping)) {
         if (
@@ -199,7 +204,7 @@ export const BibleSearch = ({ fetchBibleData }) => {
     }
 
     // 2. Starts with (simple fuzzy-ish)
-    for (const version of Object.keys(booksByVersion)) {
+    for (const version of Object.keys(booksByVersion) as (keyof typeof booksByVersion)[]) {
       const mapping = booksByVersion[version];
       for (const [abbr, name] of Object.entries(mapping)) {
         if (name.toLowerCase().startsWith(userInput)) {
@@ -210,7 +215,7 @@ export const BibleSearch = ({ fetchBibleData }) => {
 
     // 3. Fuzzy match with Fuse.js
     const books = [];
-    for (const version of Object.keys(booksByVersion)) {
+    for (const version of Object.keys(booksByVersion) as (keyof typeof booksByVersion)[]) {
       for (const [abbr, name] of Object.entries(booksByVersion[version])) {
         books.push({ abbr, name });
       }
@@ -230,13 +235,9 @@ export const BibleSearch = ({ fetchBibleData }) => {
   };
 
   // Effect to clear error when inputs change
-  useEffect(() => {
-    setError(null);
-    if (!book || !chapter) return;
-    handleBibleSearch();
-  }, [chapter, verse, bibleVersion, setError]);
+ 
 
-  const handleBibleSearch = async () => {
+  const handleBibleSearch = useCallback(async () => {
     setResult(null);
     setError(null); // Clear previous errors
     setIsLoading(true); // Start loading
@@ -264,18 +265,28 @@ export const BibleSearch = ({ fetchBibleData }) => {
       : `/${bibleId}/chapters/${verseId}`;
 
     try {
-      const data = await fetchBibleData(endpoint); // Pass only the endpoint path
+      const data = await fetchBibleData(endpoint); 
 
       // API returns data.data for the actual content
       const cleanContent = data.data.content.replace(/<[^>]*>/g, "");
       setResult({ ...data.data, content: cleanContent });
     } catch (err) {
       console.error("Error fetching Bible verse:", err);
-      setError(err.message || "An error occurred while fetching the verse.");
+      setError(
+        err instanceof Error 
+          ? err.message 
+          : "An error occurred while fetching the verse."
+      );
     } finally {
-      setIsLoading(false); // End loading
+      setIsLoading(false); 
     }
-  };
+  }, [bibleId, book, chapter, fetchBibleData, normalizeBook, setError, setIsLoading, setResult, verse]);
+
+  useEffect(() => {
+    setError(null);
+    if (!book || !chapter) return;
+    handleBibleSearch();
+  }, [book, chapter, setError, bibleVersion, verse]);
 
   return (
     <div className="p-4 px-2  w-full mx-auto">
@@ -369,7 +380,16 @@ export const BibleSearch = ({ fetchBibleData }) => {
   );
 };
 
-function BibleDisplay({ result, isVerseByVerse, bibleVersion }) {
+type BibleDisplayProps = {
+  result: {
+    reference: string
+    content: string
+  }
+  isVerseByVerse: boolean
+  bibleVersion: string
+}
+
+function BibleDisplay({ result, isVerseByVerse, bibleVersion }: BibleDisplayProps) {
   return (
     <div className="bible-display flex items-center relative">
       <div className="mt-1 px-2">

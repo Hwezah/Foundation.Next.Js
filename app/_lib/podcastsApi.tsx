@@ -1,9 +1,30 @@
 console.log("*** PODCASTS API FILE LOADED ***");
 import PodcastsList from "@/app/_components/PodcastsList";
 
-async function fetchListenNotesPodcasts(query, offset = null) {
 
-  const API_KEY = process.env.LISTEN_NOTES_API_KEY;
+type PodcastEpisode = {
+  id: string;
+  title: string;
+  audio: string;
+  thumbnail: string;
+  description: string;
+};
+
+type ListenNotesErrorType = {
+  message?: string;
+};
+async function fetchListenNotesPodcasts(query: string, offset: number | null = null): Promise<{
+  results: PodcastEpisode[];
+  next_offset: number;
+}> {
+
+  const rawKey = process.env.LISTEN_NOTES_API_KEY;
+
+  if (!rawKey) {
+    throw new Error("LISTEN_NOTES_API_KEY is missing");
+  }
+  
+  const API_KEY = rawKey;
 
   if (!API_KEY) {
     console.error("LISTEN_NOTES_API_KEY is not set in environment variables.");
@@ -16,39 +37,37 @@ async function fetchListenNotesPodcasts(query, offset = null) {
   // Adjust parameters like `type`, `sort_by_date` as needed.
   let listenNotesApiUrl = `https://listen-api.listennotes.com/api/v2/search?q=${encodeURIComponent(
     query
-  )}&type=episode&sort_by_date=0&language=English&page_size=4`; // Added language for specificity and set page_size to 2
+  )}&type=episode&sort_by_date=0&language=English&page_size=4`; 
 
   if (offset) {
-    // The API route /api/podcasts will handle subsequent offsets for pagination by the client.
     listenNotesApiUrl += `&offset=${offset}`;
   }
 
   try {
     const response = await fetch(listenNotesApiUrl, {
       headers: { "X-ListenAPI-Key": API_KEY },
-      cache: "no-store", // Or your preferred caching strategy for server-side initial fetch
+      cache: "no-store", 
     });
 
     if (!response.ok) {
       let apiErrorContent = "";
       try {
-        const errorData = await response.json();
+        const errorData = (await response.json()) as ListenNotesErrorType;
         if (errorData && errorData.message) {
           apiErrorContent = errorData.message;
         } else if (errorData && Object.keys(errorData).length > 0) {
-          // If there's an error body but no 'message' field, stringify it.
-          // Avoids stringifying an empty object to "{}"
+        
           apiErrorContent = JSON.stringify(errorData);
         }
       } catch (e) {
-        // This catch is for when response.json() itself fails (e.g., not valid JSON, or empty response)
+      
         apiErrorContent = "Could not parse error response body.";
       }
 
       const statusText = response.statusText || "No status text";
       let errorDetails = `Status ${response.status} (${statusText})`;
       if (apiErrorContent && apiErrorContent !== "{}") {
-        // Don't append if it's just an empty stringified object
+     
         errorDetails += `: ${apiErrorContent}`;
       }
 
@@ -59,44 +78,53 @@ async function fetchListenNotesPodcasts(query, offset = null) {
     }
     return await response.json();
   } catch (error) {
-    if (
-      !(
-        error.message.startsWith(
-          "Failed to fetch podcasts from Listen Notes API"
-        ) || error.message.startsWith("Server configuration error")
-      )
-    ) {
-      console.error(
-        "Error fetching podcasts directly from Listen Notes:",
-        error
-      );
+    if (error instanceof Error) {
+      if (
+        !(
+          error.message.startsWith(
+            "Failed to fetch podcasts from Listen Notes API"
+          ) || error.message.startsWith("Server configuration error")
+        )
+      ) {
+        console.error(
+          "Error fetching podcasts directly from Listen Notes:",
+          error
+        );
+      }
+      throw error;
     }
+  
+    console.error("Unknown error:", error);
     throw error;
   }
 }
 
-export default async function Podcasts({ query }) {
+export default async function Podcasts({ query }: {
+  query?: string;
+}) {
   if (!query || query.trim() === "") {
-    query = "Christian teachings"; // Default query if none provided
+    query = "Christian teachings"; 
   }
 
   try {
-    // Directly call the fetching logic for the initial load
-    const data = await fetchListenNotesPodcasts(query); // Initial fetch, no offset
+   
+    const data = await fetchListenNotesPodcasts(query); 
     const podcasts = data.results || [];
     return (
       <PodcastsList
         podcasts={podcasts}
-        initialNextOffset={data.next_offset} // ListenNotes API uses 'next_offset'
-        key={query} // Ensures the component re-renders if the query changes
-        // listQuery={query} // PodcastsList.js uses context query for "load more"
+        initialNextOffset={data.next_offset} 
+        key={query} 
+      
       />
     );
   } catch (error) {
     console.error("Error preparing podcasts component:", error);
+    const message =
+    error instanceof Error ? error.message : "Unknown error";
     return (
       <div className="text-red-500 text-center">
-        Failed to load podcasts due to an error ({error.message})
+        Failed to load podcasts due to an error ({message})
       </div>
     );
   }
